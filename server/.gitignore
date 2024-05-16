@@ -1,0 +1,64 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Build output
+build/
+dist/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# macOS
+.DS_Store
+
+# Editor/IDE specific files
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Dependency directories
+.npm/
+cache/
+
+# Coverage reports
+coverage/
+
+# Temporary files
+*.tmp
+
+# Render cache
+.cache/
+
+# Heroku-specific
+.heroku/
+
+# Cloudinary-specific
+cloudinary-config.js
+
+# Docker
+docker-compose.override.yml
+docker-compose.yml
+
+# API documentation
+api-docs/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Cache files from various tools
+.eslintcache
+.prettier-cache
+.babel-cache
+
+# Ignore package-lock.json
+package-lock.json
