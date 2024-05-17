@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
 import { getRecentUploadsFiles } from "../../util/axiosHandler"
 import { useInfiniteScroll } from "../../lib/lib";
-import UploadItemsCard from "../../components/Cards"
+import UploadItemsCards from "../../components/Cards"
 import UploadOption from "../../components/UploadOption";
 
 function RecentUploadsFiles() {
 
     const [uploadItems, setUploadItems] = useState([]);
-    
+
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [isAllDataLoad, setIsAllDataLoad] = useState(false);
@@ -64,25 +64,12 @@ function RecentUploadsFiles() {
                 <UploadOption reValidatePath={reValidatePage} />
             </div>
 
-            <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(70px,1fr))] gap-5 px-3 my-2.5">
+            <UploadItemsCards 
+            loading={loading}
+            uploadItems={uploadItems} 
+            reValidatePage={reValidatePage} />
 
-                {loading && (
-                    <div className="ml-auto mr-auto block my-24">
-                        <CircularProgress />
-                    </div>
-                )}
-
-                {!loading && uploadItems.length > 0 && (
-                    <UploadItemsCard uploadItems={uploadItems} reValidatePage={reValidatePage} />
-                )}
-
-                {loading && uploadItems.length > 0 && (
-                    <div className="w-full h-full flex justify-center items-center my-5">
-                        <CircularProgress />
-                    </div>
-                )}
-                <div ref={bottomObserverElement}></div>
-            </div>
+            <div ref={bottomObserverElement}></div>
         </>
     )
 }

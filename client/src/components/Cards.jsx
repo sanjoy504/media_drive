@@ -1,12 +1,13 @@
 import { Fragment, useState } from "react"
 import { Link } from "react-router-dom"
+import { CircularProgress } from "@mui/material";
 import { validateUploadFilesTypes } from "../util/utils"
 import FileViewerModel from "./models/FileViewerModel"
 import usePreventContextMenu from "../hooks/contextMenuEvent";
 import LazyLoadingImage from "../lib/LazyLoadingImage";
 
 
-export default function UploadItemsCard({ uploadItems, reValidatePage }) {
+export default function UploadItemsCards({ loading, uploadItems, reValidatePage }) {
 
     const [fileView, setFileView] = useState({
         fileId: null,
@@ -19,27 +20,44 @@ export default function UploadItemsCard({ uploadItems, reValidatePage }) {
         return null
     };
 
+    if (loading && uploadItems?.length === 0) {
+        return (
+            <div className="w-full min-h-[70vh] flex justify-center items-center">
+                <CircularProgress />
+            </div>
+        )
+    }
+
     return (
         <>
-            {uploadItems.map((data) => (
-                <Fragment key={data._id}>
-                    {validateUploadFilesTypes(data.type) === "folder" && (
-                        <FolderCard id={data._id} name={data.name} />
-                    )}
-                    {validateUploadFilesTypes(data.type) === "image" && (<ImageCard
-                        id={data._id}
-                        src={data.uploadLink}
-                        alt={data.name}
-                        handleSetFileView={setFileView}
-                    />)}
-                    {validateUploadFilesTypes(data.type) === "pdf" && (<PdfCard
-                        id={data._id}
-                        name={data.name}
-                        pdfLink={data.uploadLink}
-                        handleSetFileView={setFileView}
-                    />)}
-                </Fragment>
-            ))}
+            <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(70px,1fr))] gap-5 px-3 my-2.5">
+
+                {uploadItems.map((data) => (
+                    <Fragment key={data._id}>
+                        {validateUploadFilesTypes(data.type) === "folder" && (
+                            <FolderCard id={data._id} name={data.name} />
+                        )}
+                        {validateUploadFilesTypes(data.type) === "image" && (<ImageCard
+                            id={data._id}
+                            src={data.uploadLink}
+                            alt={data.name}
+                            handleSetFileView={setFileView}
+                        />)}
+                        {validateUploadFilesTypes(data.type) === "pdf" && (<PdfCard
+                            id={data._id}
+                            name={data.name}
+                            pdfLink={data.uploadLink}
+                            handleSetFileView={setFileView}
+                        />)}
+                    </Fragment>
+                ))}
+
+            </div>
+            {loading && uploadItems?.length > 0 && (
+                <div className="w-full h-auto flex justify-center items-center my-6">
+                    <CircularProgress />
+                </div>
+            )}
 
             <FileViewerModel
                 fileId={fileView.fileId}
@@ -48,7 +66,7 @@ export default function UploadItemsCard({ uploadItems, reValidatePage }) {
                 type={fileView.type}
                 handleSetFileView={setFileView}
                 reValidatePage={reValidatePage}
-                 />
+            />
         </>
     )
 }
