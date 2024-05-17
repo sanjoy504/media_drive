@@ -11,7 +11,7 @@ import { environmentVariables } from './helper/helper.js';
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  //<StrictMode>
     <Provider store={reduxStore}> {/** Redux toolkit State management ***/}
       <GoogleOAuthProvider clientId={environmentVariables.googleAuthClientId}> {/** Google auth provider ***/}
         <Router>
@@ -19,5 +19,5 @@ createRoot(document.getElementById('root')).render(
         </Router>
       </GoogleOAuthProvider>
     </Provider>
-  </StrictMode>,
+  //</StrictMode>,
 )

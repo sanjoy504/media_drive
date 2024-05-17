@@ -1,10 +1,8 @@
-import cloudIcon from "../assets/images/cloud-computing.png"
 import { Link, NavLink } from "react-router-dom"
 import { getWebState } from "../context/web_state/getWebState"
 import { toggleSidebar } from "../util/utils";
 
 function SideBar() {
-
 
     const { sideBarOpen } = getWebState();
 

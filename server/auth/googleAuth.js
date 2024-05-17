@@ -7,24 +7,24 @@ export async function googleAuth(req, res) {
     try {
         const userData = req.body;
 
-        // Extract user email from request body user data
+        //Extract user email from request body user data
         const { email } = userData;
 
-        // Find user by email
+        //Find user by email
         let user = await User.findOne({ email }).select('name email avatar');
 
-        // If user does not exist, create a new user
+        //If user does not exist, create a new user
         if (!user) {
-            // Create a new user with the provided user data
+            //Create a new user with the provided user data
             user = new User(userData);
             await user.save();
         }
 
-        // Generate JWT token
+        //Generate JWT token
         const tokenData = { id: user._id };
         const token = jwt.sign(tokenData, process.env.JWT_SECRET);
 
-        // Save the token to the user document
+        //Save the token to the user document
         user.authToken = token;
         await user.save();
 

@@ -5,7 +5,7 @@ export const getClientUploadItems = async ({ folder = false, limit, skip, filter
     let status = 500;
     let data = [];
     let isDataEnd = false;
-    let folderInfo= null;
+    let folderInfo = null;
 
     try {
 
@@ -84,3 +84,31 @@ export const getRecentUploadsFiles = async ({ limit, skip, filter }) => {
 
     return { status, data, isDataEnd };
 };
+
+export const deleteFileFromServer = async (fileId) => {
+
+    let status = 500;
+
+    try {
+        const api = axios.create({
+            baseURL: environmentVariables.backendUrl,
+            withCredentials: true
+        })
+
+        const response = await api.delete(`/delete/${fileId}`);
+
+        const { uploadItems, endOfData } = response.data || {};
+
+        status = response.status;
+        data = uploadItems;
+        isDataEnd = endOfData;
+
+    } catch (error) {
+        console.error(error);
+        if (error.response) {
+            status = error.response.status
+        }
+    };
+
+    return status;
+}

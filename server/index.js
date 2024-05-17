@@ -14,10 +14,13 @@ const app = express();
 //Server PORT
 const PORT = process.env.SERVER_PORT || 8000;
 
+//Split the ALLOW_ORIGINS environment variable into array
+const allowedOrigins = process.env.ALLOW_ORIGINS.split(',').map(origin => origin.trim());
+
 //server cors configuration
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: allowedOrigins,
     credentials: true
   })
 );

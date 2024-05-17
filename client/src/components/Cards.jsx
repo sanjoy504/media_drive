@@ -2,10 +2,14 @@ import { Fragment, useState } from "react"
 import { Link } from "react-router-dom"
 import { validateUploadFilesTypes } from "../util/utils"
 import FileViewerModel from "./models/FileViewerModel"
+import usePreventContextMenu from "../hooks/contextMenuEvent";
+import LazyLoadingImage from "../lib/LazyLoadingImage";
 
-export default function UploadItemsCard({ uploadItems }) {
+
+export default function UploadItemsCard({ uploadItems, reValidatePage }) {
 
     const [fileView, setFileView] = useState({
+        fileId: null,
         title: null,
         src: null,
         type: null
@@ -38,10 +42,13 @@ export default function UploadItemsCard({ uploadItems }) {
             ))}
 
             <FileViewerModel
+                fileId={fileView.fileId}
                 title={fileView.title}
                 src={fileView.src}
                 type={fileView.type}
-                handleSetFileView={setFileView} />
+                handleSetFileView={setFileView}
+                reValidatePage={reValidatePage}
+                 />
         </>
     )
 }
@@ -49,7 +56,7 @@ export default function UploadItemsCard({ uploadItems }) {
 function FolderCard({ id, name }) {
 
     return (
-        <Link to={`/uploads/${id}`} className="bg-slate-50 p-1.5 w-full h-28 rounded-md shadow-sm flex flex-col justify-center items-center">
+        <Link to={`/uploads/${id}`} className="bg-slate-50 p-1 w-full h-28 rounded-md shadow-sm flex flex-col justify-center items-center">
             <i className="bi bi-folder-fill text-indigo-400 text-5xl"></i>
             <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full">
                 {name}
@@ -61,10 +68,22 @@ function FolderCard({ id, name }) {
 
 function ImageCard({ id, src, alt, handleSetFileView }) {
 
+    const fileViewSetup = () => {
+        handleSetFileView({ fileId: id, title: alt, src, type: "image" })
+    }
+
+    const imageCardRef = usePreventContextMenu(fileViewSetup);
+
     return (
-        <div onClick={() => handleSetFileView({ title: alt, src, type: "image" })} className="w-full h-full min-h-20 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center cursor-pointer p-2 overflow-hidden">
-            <img className="w-full max-w-16 h-auto max-h-12 rounded-sm" src={src} alt={alt} />
-            <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full">
+        <div ref={imageCardRef} onClick={fileViewSetup} className="w-full h-full min-h-20 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center cursor-pointer p-1 overflow-hidden">
+
+            <LazyLoadingImage
+                className="w-full max-w-16 h-auto max-h-12 rounded-sm"
+                actualSrc={src}
+                alt={alt}
+            />
+
+            <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full mt-1.5">
                 {alt}
             </p>
         </div>
@@ -73,11 +92,17 @@ function ImageCard({ id, src, alt, handleSetFileView }) {
 
 function PdfCard({ id, name, pdfLink, handleSetFileView }) {
 
+    const fileViewSetup = () => {
+        handleSetFileView({ fileId: id, title: name, src: pdfLink, type: "pdf" });
+    };
+
+    const pdfCardRef = usePreventContextMenu(fileViewSetup);
+
     return (
 
-        <div onClick={() => handleSetFileView({ title: name, src: pdfLink, type: "pdf" })} className="bg-slate-50 p-1.5 w-full h-28 rounded-md shadow-sm flex flex-col justify-center items-center cursor-pointer">
+        <div ref={pdfCardRef} onClick={fileViewSetup} className="bg-slate-50 p-1 w-full h-28 rounded-md shadow-sm flex flex-col justify-center items-center cursor-pointer">
             <i className="bi bi-file-earmark-pdf-fill text-red-600 text-5xl"></i>
-            <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full">
+            <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full mt-1.5">
                 {name}
             </p>
         </div>

@@ -114,10 +114,12 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                 )}
 
             </DialogContent>
+            {!progress && (
             <DialogActions>
                 <Button onClick={handleClose}>Cancel</Button>
                 <Button type="submit">Upoad</Button>
             </DialogActions>
+            )}
         </Dialog>
     );
 })

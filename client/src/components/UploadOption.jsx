@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import AddFolderModel from './models/AddFolderModel';
 import UploadFileModel from './models/UploadFileModel';
 
-export default function UploadOption({ buttonText = "Add new", reValidatePath }) {
+export default function UploadOption({ buttonText = "Add new", buttonIcon="bi bi-plus", reValidatePath }) {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -31,7 +31,7 @@ export default function UploadOption({ buttonText = "Add new", reValidatePath })
     return (
         <>
             <Button aria-describedby={id} variant="contained" className="flex gap-1 h-8" onClick={handleClick}>
-                <i className="bi bi-plus text-xl"></i>
+                <i className={`${buttonIcon} text-xl`}></i>
                 <span className="capitalize text-sm">{buttonText}</span>
             </Button>
             <Popover

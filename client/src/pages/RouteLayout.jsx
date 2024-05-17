@@ -15,6 +15,9 @@ const RecentUploadsFiles = lazy(() => import("./recent_upoads_files/RecentUpload
 //Storage page route
 const StoragePage = lazy(() => import("./storage/StoragePage"));
 
+//Search page route
+const SearchPage = lazy(() => import("./search/SearchPage"));
+
 function RouteLayout() {
     return (
         <Suspense>
@@ -27,6 +30,8 @@ function RouteLayout() {
                 </Route>
                 <Route exact path="/recent-files" element={<RecentUploadsFiles />} />
                 <Route exact path="/storage" element={<StoragePage />} />
+
+                <Route exact path="/search" element={<SearchPage />} />
 
                 <Route path="*" element={<h1>No content</h1>} />
             </Routes>

@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import CircularProgress from '@mui/material/CircularProgress';
-import UploadItemsCard from "../../components/Cards"
 import { getRecentUploadsFiles } from "../../util/axiosHandler"
+import { useInfiniteScroll } from "../../lib/lib";
+import UploadItemsCard from "../../components/Cards"
 import UploadOption from "../../components/UploadOption";
 
 function RecentUploadsFiles() {
@@ -12,7 +13,9 @@ function RecentUploadsFiles() {
     const [page, setPage] = useState(1);
     const [isAllDataLoad, setIsAllDataLoad] = useState(false);
 
-    const bottomObserverElement = useRef(null);
+    const loadMore = () => setPage((prevPage) => prevPage + 1);
+
+    const bottomObserverElement = useInfiniteScroll(loadMore, loading, isAllDataLoad);;
 
     const reValidatePage = () => {
         setPage(1);
@@ -20,31 +23,6 @@ function RecentUploadsFiles() {
         setLoading(false);
         setUploadItems([]);
     }
-
-    const handleObservers = useCallback((entries) => {
-        const target = entries[0];
-        if (target.isIntersecting && !loading && !isAllDataLoad) {
-            setPage((prevPage) => prevPage + 1);
-        }
-    }, [loading, isAllDataLoad]);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(handleObservers, {
-            root: null,
-            rootMargin: "10px",
-            threshold: 1.0,
-        });
-
-        if (bottomObserverElement.current) {
-            observer.observe(bottomObserverElement.current);
-        }
-
-        return () => {
-            if (bottomObserverElement.current) {
-                observer.unobserve(bottomObserverElement.current);
-            }
-        };
-    }, [handleObservers]);
 
     useEffect(() => {
         (async () => {
@@ -59,7 +37,11 @@ function RecentUploadsFiles() {
                 });
 
                 if (status === 200) {
-                    setUploadItems(data);
+                    if (page === 1) {
+                        setUploadItems(data)
+                    } else {
+                        setUploadItems((prev) => [...prev, ...data]);
+                    }
                 };
 
                 if (isDataEnd) {
@@ -78,7 +60,7 @@ function RecentUploadsFiles() {
     return (
         <>
             <div className="w-full h-auto flex justify-between items-center py-2 px-5 small-screen:px-3 sticky top-[70px] z-20 bg-white border-b border-b-slate-100">
-                <div className=" text-gray-900 text-xl small-screen:text-base font-bold">My Uploads</div>
+                <div className=" text-gray-900 text-xl small-screen:text-base font-bold">Recent files</div>
                 <UploadOption reValidatePath={reValidatePage} />
             </div>
 
@@ -91,7 +73,7 @@ function RecentUploadsFiles() {
                 )}
 
                 {!loading && uploadItems.length > 0 && (
-                    <UploadItemsCard uploadItems={uploadItems} />
+                    <UploadItemsCard uploadItems={uploadItems} reValidatePage={reValidatePage} />
                 )}
 
                 {loading && uploadItems.length > 0 && (
