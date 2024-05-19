@@ -18,6 +18,10 @@ const uploadItemSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'UploadItem',
     },
+    fileSize: {
+        type: String,
+        required: false,
+    },
     uploadLink: {
         type: String,
         required: false,

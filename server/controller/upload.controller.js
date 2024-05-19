@@ -1,7 +1,18 @@
 import { isValidObjectId } from "mongoose";
+import { v4 as uuidv4 } from "uuid"
+import fs from "fs/promises"
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import UploadItem from "../models/uploadItems.model.js";
 import { uploadOnCloudinary } from "../util/cloudinary.js";
-import fs from "fs/promises"
+import { formatFileSize } from "../util/utils.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Ensure the temporary directory exists
+const tempDir = path.join(__dirname, './temp');
 
 //Folder upload controller
 export async function folderUpload(req, res) {
@@ -68,26 +79,37 @@ export async function fileUpload(req, res) {
         const { _id } = user || {};
 
         const { folderId } = req.body;
-     
-        // get file path
-        const filePath = req.file.path;
 
-        if (!filePath) {
-            
-            return res.status(400).json({ message: "File not found in upload dir" });
+        const file = req.file
+
+        //if file not provided the not proseed next 
+        if (!file) {
+
+            return res.status(400).json({ message: "No file provided" });
         };
 
         //get file griginal name
-        const fileOriginalName = req.file.originalname;
+        const fileOriginalName = file.originalname;
+
+        //format file size to kb mb or more
+        const fileSize = formatFileSize(file.size);
+
+        //Create a temporary file path
+        const tempFilePath = path.join(tempDir, `${uuidv4()}${path.extname(fileOriginalName)}`);
+
+        //Write the buffer to a temporary file
+        await fs.writeFile(tempFilePath, file.buffer);
 
         //get file extension name
         const lastDotIndex = fileOriginalName.lastIndexOf('.');
         const fileExtension = lastDotIndex !== -1 ? fileOriginalName.slice(lastDotIndex + 1) : '';
 
+        //Creat document object for mongodb
         const documentObject = {
             user: _id,
             name: fileOriginalName,
             type: fileExtension,
+            fileSize
         };
 
         if (folderId) {
@@ -106,8 +128,8 @@ export async function fileUpload(req, res) {
 
         // Upload file to Cloudinary
         const uploadCloudinary = await uploadOnCloudinary({
-            file: filePath,
-            publicId: newUpload._id, // Use 'newUpload._id' directly
+            file: tempFilePath,
+            publicId: newUpload._id,
             folderPath: "media_cloud/user_upload"
         });
         if (!uploadCloudinary.secure_url) {
@@ -115,7 +137,7 @@ export async function fileUpload(req, res) {
         };
 
         // Delete the file from the local directory after uploading to Cloudinary
-        const deleteFilePromise = fs.unlink(filePath);
+        const deleteFilePromise = fs.unlink(tempFilePath);
 
         // Perform save documemt and delete file at same time
         await Promise.all([saveDocumentPromise, deleteFilePromise]);
@@ -126,9 +148,10 @@ export async function fileUpload(req, res) {
         // Save the updated document
         await newUpload.save();
 
-        res.json({ message: "File uploaded successfully", saveDocument: newUpload })
+        res.json({ message: "File uploaded successfully", saveDocument: newUpload });
+
     } catch (error) {
         console.log(error.message);
-        return res.status(500).json({ message: "Internal server error", error: error.message });
+        return res.status(500).json({ message: "Internal server error" });
     }
 };
