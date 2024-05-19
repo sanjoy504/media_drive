@@ -68,8 +68,16 @@ export async function fileUpload(req, res) {
         const { _id } = user || {};
 
         const { folderId } = req.body;
-
+     
+        // get file path
         const filePath = req.file.path;
+
+        if (!filePath) {
+            
+            return res.status(400).json({ message: "File not found in upload dir" });
+        };
+
+        //get file griginal name
         const fileOriginalName = req.file.originalname;
 
         //get file extension name
