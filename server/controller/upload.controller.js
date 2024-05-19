@@ -121,6 +121,6 @@ export async function fileUpload(req, res) {
         res.json({ message: "File uploaded successfully", saveDocument: newUpload })
     } catch (error) {
         console.log(error.message);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
