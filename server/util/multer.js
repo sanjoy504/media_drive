@@ -1,6 +1,6 @@
 import multer from "multer";
 
-//multer middleware
-const storage = multer.memoryStorage()
-// multer configuration
+//Multer file upload middleware
+const storage = multer.memoryStorage();
+
 export const multerUpload = multer({ storage: storage })

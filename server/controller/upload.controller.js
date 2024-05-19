@@ -1,18 +1,15 @@
 import { isValidObjectId } from "mongoose";
-import { v4 as uuidv4 } from "uuid"
-import fs from "fs/promises"
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import UploadItem from "../models/uploadItems.model.js";
 import { uploadOnCloudinary } from "../util/cloudinary.js";
 import { formatFileSize } from "../util/utils.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
-// Ensure the temporary directory exists
-const tempDir = path.join(__dirname, './temp');
+// Convert buffer to data URI
+function bufferToDataUri(file) {
+    const base64 = file.buffer.toString('base64');
+    const mimeType = file.mimetype;
+    return `data:${mimeType};base64,${base64}`;
+}
 
 //Folder upload controller
 export async function folderUpload(req, res) {
@@ -68,10 +65,8 @@ export async function folderUpload(req, res) {
 };
 
 
-
-//File upload controller
+//Handle file upload controller with cloudinary
 export async function fileUpload(req, res) {
-
     try {
 
         const user = req.user;
@@ -80,31 +75,24 @@ export async function fileUpload(req, res) {
 
         const { folderId } = req.body;
 
-        const file = req.file
+        const file = req.file;
 
-        //if file not provided the not proseed next 
+        // If file not provided, do not proceed
         if (!file) {
-
             return res.status(400).json({ message: "No file provided" });
-        };
+        }
 
-        //get file griginal name
+        // Get file original name
         const fileOriginalName = file.originalname;
 
-        //format file size to kb mb or more
+        // Format file size to KB, MB, or more
         const fileSize = formatFileSize(file.size);
 
-        //Create a temporary file path
-        const tempFilePath = path.join(tempDir, `${uuidv4()}${path.extname(fileOriginalName)}`);
-
-        //Write the buffer to a temporary file
-        await fs.writeFile(tempFilePath, file.buffer);
-
-        //get file extension name
+        // Get file extension name
         const lastDotIndex = fileOriginalName.lastIndexOf('.');
-        const fileExtension = lastDotIndex !== -1 ? fileOriginalName.slice(lastDotIndex + 1) : '';
+        const fileExtension = lastDotIndex !== -1 ? fileOriginalName.slice(lastDotIndex + 1) : 'text';
 
-        //Creat document object for mongodb
+        // Create document object for MongoDB
         const documentObject = {
             user: _id,
             name: fileOriginalName,
@@ -113,12 +101,11 @@ export async function fileUpload(req, res) {
         };
 
         if (folderId) {
-
             if (!isValidObjectId(folderId)) {
                 return res.status(400).json({ message: "Invalid folder" });
             }
             documentObject.folder = folderId;
-        };
+        }
 
         // Create a new MongoDB document
         const newUpload = new UploadItem(documentObject);
@@ -126,21 +113,22 @@ export async function fileUpload(req, res) {
         // Save the document in MongoDB
         const saveDocumentPromise = newUpload.save();
 
-        // Upload file to Cloudinary
+         // Convert file buffer to file URI
+         const fileeUri = bufferToDataUri(file);
+
+        // Upload file to Cloudinary using the buffer directly
         const uploadCloudinary = await uploadOnCloudinary({
-            file: tempFilePath,
-            publicId: newUpload._id,
+            file: fileeUri,
+            publicId: newUpload._id.toString(),
             folderPath: "media_cloud/user_upload"
         });
+
         if (!uploadCloudinary.secure_url) {
             return res.status(500).json({ message: "Error while uploading to Cloudinary" });
-        };
+        }
 
-        // Delete the file from the local directory after uploading to Cloudinary
-        const deleteFilePromise = fs.unlink(tempFilePath);
-
-        // Perform save documemt and delete file at same time
-        await Promise.all([saveDocumentPromise, deleteFilePromise]);
+        // Perform save document and delete file at the same time
+        await saveDocumentPromise;
 
         // Update the upload link in the document
         newUpload.uploadLink = uploadCloudinary.secure_url;
@@ -148,10 +136,9 @@ export async function fileUpload(req, res) {
         // Save the updated document
         await newUpload.save();
 
-        res.json({ message: "File uploaded successfully", saveDocument: newUpload });
-
+        res.json({ message: "File uploaded successfully" });
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ message: "Internal server error" });
     }
-};
+}
