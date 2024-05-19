@@ -28,8 +28,11 @@ app.use(
 //Use cookie parser
 app.use(cookieParser());
 
+//Use express json and urlencoded
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/uploads", express.static("uploads"))
 
 //Connecting to mongodb database
 connectToMongo()
