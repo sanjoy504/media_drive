@@ -1,15 +1,7 @@
 import { isValidObjectId } from "mongoose";
 import UploadItem from "../models/uploadItems.model.js";
 import { uploadOnCloudinary } from "../util/cloudinary.js";
-import { formatFileSize } from "../util/utils.js";
-
-
-// Convert buffer to data URI
-function bufferToDataUri(file) {
-    const base64 = file.buffer.toString('base64');
-    const mimeType = file.mimetype;
-    return `data:${mimeType};base64,${base64}`;
-}
+import { bufferToDataUri, formatFileSize } from "../util/utils.js";
 
 //Folder upload controller
 export async function folderUpload(req, res) {

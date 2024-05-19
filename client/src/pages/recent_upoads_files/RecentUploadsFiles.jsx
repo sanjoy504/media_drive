@@ -61,7 +61,7 @@ function RecentUploadsFiles() {
         <>
             <div className="w-full h-auto flex justify-between items-center py-2 px-5 small-screen:px-3 sticky top-[70px] z-20 bg-white border-b border-b-slate-100">
                 <div className=" text-gray-900 text-xl small-screen:text-base font-bold">Recent files</div>
-                <UploadOption reValidatePath={reValidatePage} />
+                <UploadOption folder={false} reValidatePath={reValidatePage} />
             </div>
 
             <UploadItemsCards 

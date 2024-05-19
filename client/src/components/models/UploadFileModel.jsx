@@ -42,8 +42,7 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        formData.append('userId', '6612728ad3fd6ef24ad97703'); // Add userId to FormData
-
+    
         if (folderId) {
             formData.append('folderId', folderId); // Add folder id to FormData   
         }

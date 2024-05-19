@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import AddFolderModel from './models/AddFolderModel';
 import UploadFileModel from './models/UploadFileModel';
 
-export default function UploadOption({ buttonText = "Add new", buttonIcon="bi bi-plus", reValidatePath }) {
+export default function UploadOption({ buttonText = "Add new", buttonIcon = "bi bi-plus", reValidatePath, folder = true }) {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -46,7 +46,7 @@ export default function UploadOption({ buttonText = "Add new", buttonIcon="bi bi
                 }}
             >
 
-                <div className="px-3 py-2 flex flex-col space-y-2">
+                <div className="px-4 py-2 flex flex-col space-y-2">
 
                     <button
                         onClick={() => setOpenFileModel(true)}
@@ -58,24 +58,26 @@ export default function UploadOption({ buttonText = "Add new", buttonIcon="bi bi
 
                     <input ref={fileRef} type="file" name="file" className="hidden" />
 
+                    {folder && (
                     <button onClick={() => setOpenFolderModel(true)} type="button" className="flex gap-2 text-gray-600 text-base">
                         <i className="bi bi-folder-plus"></i>
                         <span>New folder</span>
                     </button>
+                    )}
                 </div>
             </Popover>
 
-            <AddFolderModel 
-            isOpen={openFolderModel} 
-            setOpen={setOpenFolderModel} 
-            reValidatePath={reValidatePath}
+            <AddFolderModel
+                isOpen={openFolderModel}
+                setOpen={setOpenFolderModel}
+                reValidatePath={reValidatePath}
             />
 
-            <UploadFileModel 
-            isOpen={openFileModel} 
-            setOpen={setOpenFileModel}
-            reValidatePath={reValidatePath}
-             />
+            <UploadFileModel
+                isOpen={openFileModel}
+                setOpen={setOpenFileModel}
+                reValidatePath={reValidatePath}
+            />
         </>
     );
 }

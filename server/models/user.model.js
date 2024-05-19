@@ -15,6 +15,8 @@ const userSchema = new Schema({
 
   createdAt: { type: Date, default: Date.now },
 
+  storage_limit: { type: String, default: "3 GB" },
+
   authToken: { type: String, required: false }
 });
 

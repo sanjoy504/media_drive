@@ -1,11 +1,19 @@
 //Toggle side bar work only small screen
 
-export const toggleSidebar = ()=>{
+export const toggleSidebar = (type)=>{
     const sideBar = document.querySelector("#sidebar");
 
     if (sideBar) {
+
+        if (type === "hide") {
+            sideBar.classList.add("small-screen:-translate-x-full");
+        }else if(type === "show") {
+            sideBar.classList.add("small-screen:-translate-x-full");
+        }else{
         sideBar.classList.toggle("small-screen:-translate-x-full");
-    };
+        }
+
+    }
 }
 
 // Validate if the provided type is an image based on the extension

@@ -27,15 +27,24 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
         setOpen(false);
     };
 
+   const handleOnInputChange =()=>{
+        if(errorMessage){
+            setErrorMessage(null);
+        }
+       
+    }
     const handleSubmit = async (event) => {
 
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const formJson = Object.fromEntries(formData.entries());
-        const folderName = formJson.foldername;
+        const folderName = formJson.foldername?.trim();
 
+        if (!folderName) {
+            setErrorMessage('Folder name is required');
+            return;
+        }
         const payload = {
-            userId: '6612728ad3fd6ef24ad97703',
             folderName,
             folderId
         };
@@ -115,6 +124,7 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                             type="text"
                             fullWidth
                             variant="standard"
+                            onChange={handleOnInputChange}
                         />
                         <DialogContentText>
                             Please provide your folder name and create

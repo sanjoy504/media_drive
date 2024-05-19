@@ -30,7 +30,7 @@ export default function UploadItemsCards({ loading, uploadItems, reValidatePage 
 
     return (
         <>
-            <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(70px,1fr))] gap-5 px-3 my-2.5">
+            <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(70px,1fr))] gap-2 my-2.5">
 
                 {uploadItems.map((data) => (
                     <Fragment key={data._id}>
@@ -74,7 +74,7 @@ export default function UploadItemsCards({ loading, uploadItems, reValidatePage 
 function FolderCard({ id, name }) {
 
     return (
-        <Link to={`/uploads/${id}`} className="bg-slate-50 p-1 w-full h-28 rounded-md shadow-sm flex flex-col justify-center items-center">
+        <Link to={`/uploads/${id}`} className="bg-slate-50 p-1 w-full max-w-40 h-28 rounded-md shadow-sm flex flex-col justify-center items-center">
             <i className="bi bi-folder-fill text-indigo-400 text-5xl"></i>
             <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full">
                 {name}
@@ -93,7 +93,7 @@ function ImageCard({ id, src, alt, handleSetFileView }) {
     const imageCardRef = usePreventContextMenu(fileViewSetup);
 
     return (
-        <div ref={imageCardRef} onClick={fileViewSetup} className="w-full h-full min-h-20 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center cursor-pointer p-1 overflow-hidden">
+        <div ref={imageCardRef} onClick={fileViewSetup} className="w-full h-full max-w-40 min-h-20 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center cursor-pointer p-1 overflow-hidden">
 
             <LazyLoadingImage
                 className="w-full max-w-16 h-auto max-h-12 rounded-sm"
@@ -118,7 +118,7 @@ function PdfCard({ id, name, pdfLink, handleSetFileView }) {
 
     return (
 
-        <div ref={pdfCardRef} onClick={fileViewSetup} className="bg-slate-50 p-1 w-full h-28 rounded-md shadow-sm flex flex-col justify-center items-center cursor-pointer">
+        <div ref={pdfCardRef} onClick={fileViewSetup} className="bg-slate-50 p-1 w-full max-w-40 h-28 rounded-md shadow-sm flex flex-col justify-center items-center cursor-pointer">
             <i className="bi bi-file-earmark-pdf-fill text-red-600 text-5xl"></i>
             <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full mt-1.5">
                 {name}

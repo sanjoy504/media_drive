@@ -10,7 +10,7 @@ import { reduxStore } from "./context/store.js"
 import { environmentVariables } from './helper/helper.js';
 import App from './App.jsx'
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById('media-cloud')).render(
   //<StrictMode>
     <Provider store={reduxStore}> {/** Redux toolkit State management ***/}
       <GoogleOAuthProvider clientId={environmentVariables.googleAuthClientId}> {/** Google auth provider ***/}

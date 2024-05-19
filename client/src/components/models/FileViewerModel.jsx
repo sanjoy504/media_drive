@@ -40,9 +40,9 @@ function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValida
 
     return (
         <div onClick={handleBackgroundClick} className="w-full h-full fixed top-0 left-0 z-50 bg-gray-950 bg-opacity-75 flex items-center justify-center">
-            <div onClick={handleChildClick} className="w-fit h-fit max-w-96 max-h-[600px] flex flex-col space-y-4 items-center bg-white p-4 rounded-sm mx-2">
+            <div className={`${type === "image" ? "bg-transparent": "bg-white"} w-fit h-fit max-w-96 max-h-[500px] small-screen:max-h-[450px] flex flex-col space-y-4 items-center justify-center rounded-sm mx-2 p-3`}>
                 {type === "image" ? (
-                    <img className="w-full h-full rounded-sm max-w-96 max-h-[600px]" src={src} alt={title} />
+                    <img className="w-full h-full rounded-sm overflow-hidden select-none pointer-events-none" src={src} alt={title} />
                 ) : (
                     <iframe className="w-full max-w-[350] h-96 overflow-x-hidden" src={src} title="PDF Preview" />
                 )}

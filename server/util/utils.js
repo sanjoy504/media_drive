@@ -28,5 +28,12 @@ export function formatFileSize(bytes) {
     if (bytes === 0) return '0 Byte';
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
     return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+};
+
+// Convert buffer to data URI
+export function bufferToDataUri(file) {
+    const base64 = file.buffer.toString('base64');
+    const mimeType = file.mimetype;
+    return `data:${mimeType};base64,${base64}`;
 }
 

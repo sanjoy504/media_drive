@@ -1,10 +1,10 @@
-import { Link, NavLink } from "react-router-dom"
-import { getWebState } from "../context/web_state/getWebState"
+import { Link, NavLink, useLocation } from "react-router-dom"
 import { toggleSidebar } from "../util/utils";
+import { useEffect } from "react";
 
 function SideBar() {
 
-    const { sideBarOpen } = getWebState();
+    const { pathname } = useLocation();
 
     const navLinks = [{
         name: "My uploads",
@@ -21,7 +21,14 @@ function SideBar() {
         path: "/recent-files",
         icon: "bi bi-clock-history"
     },
-    ]
+    ];
+
+
+    useEffect(() => {
+        if (pathname !== "/" && window.innerWidth <=800) {
+            toggleSidebar('hide')
+        }
+    }, [toggleSidebar, pathname]);
     return (
         <div id="sidebar" className="w-64 small-screen:fixed small-screen:-translate-x-full h-screen top-0 left-0 z-50 bg-white border-r border-r-slate-300 py-2 transition-all duration-300 ease-in-out">
             <div className="px-2.5 flex justify-between items-center">
@@ -33,7 +40,7 @@ function SideBar() {
                     <div className="text-blue-500 text-base font-bold">Media cloud</div>
                 </Link>
                 <button onClick={toggleSidebar} type="button" className="hidden small-screen:block bg-gray-100 w-7 h-7 rounded-sm">
-                <i className="bi bi-x-lg text-gray-700"></i>
+                    <i className="bi bi-x-lg text-gray-700"></i>
                 </button>
             </div>
 

@@ -37,11 +37,18 @@ function App() {
 
         if (response.status === 200) {
 
-          const { userDetails } = responseData;
+          const { userDetails, storageDetails } = responseData;
 
-          const { _id, email, name, avatar } = userDetails || {};
+          const { _id, email, name, avatar, storage_limit } = userDetails || {};
 
-          dispatch(updateUserDataState({ userId: _id, name, email, avatar: avatar }));
+          dispatch(updateUserDataState({
+            userId: _id,
+            name,
+            email,
+            avatar: avatar,
+            storage_limit,
+            storageDetails
+          }));
         }
       } catch (error) {
         console.log(error)
