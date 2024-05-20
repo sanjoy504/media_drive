@@ -18,17 +18,11 @@ export const userSlice = createSlice({
       const updatedState = { ...state, ...action.payload };
       return updatedState;
     },
-
-
-    logoutUser: () => {
-      return initialState;
-    },
   },
 });
 
 export const {
   updateUserDataState,
-  logoutUser
 } = userSlice.actions;
 
 export default userSlice.reducer;

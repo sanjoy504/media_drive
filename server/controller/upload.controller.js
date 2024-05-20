@@ -57,80 +57,80 @@ export async function folderUpload(req, res) {
 };
 
 
-//Handle file upload controller with cloudinary
+// Handle file upload controller with cloudinary
 export async function fileUpload(req, res) {
     try {
-
         const user = req.user;
-
         const { _id } = user || {};
-
         const { folderId } = req.body;
+        const files = req.files;
 
-        const file = req.file;
-
-        // If file not provided, do not proceed
-        if (!file) {
-            return res.status(400).json({ message: "No file provided" });
+        // If files not provided, do not proceed
+        if (!files || files.length === 0) {
+            return res.status(400).json({ message: "No files provided" });
         }
 
-        // Get file original name
-        const fileOriginalName = file.originalname;
-
-        // Format file size to KB, MB, or more
-        const fileSize = formatFileSize(file.size);
-
-        // Get file extension name
-        const lastDotIndex = fileOriginalName.lastIndexOf('.');
-        const fileExtension = lastDotIndex !== -1 ? fileOriginalName.slice(lastDotIndex + 1) : 'text';
-
-        // Create document object for MongoDB
-        const documentObject = {
-            user: _id,
-            name: fileOriginalName,
-            type: fileExtension,
-            fileSize
-        };
-
-        if (folderId) {
-            if (!isValidObjectId(folderId)) {
-                return res.status(400).json({ message: "Invalid folder" });
+        for (const file of files) {
+            // Check if file size is greater than 15 MB (15 * 1024 * 1024 bytes)
+            if (file.size > 15 * 1024 * 1024) {
+                return res.status(400).json({ message: "File size exceeds 15 MB limit" });
             }
-            documentObject.folder = folderId;
+
+            // Get file original name
+            const fileOriginalName = file.originalname;
+
+            // Format file size to KB, MB, or more
+            const fileSize = formatFileSize(file.size);
+
+            // Get file extension name
+            const lastDotIndex = fileOriginalName.lastIndexOf('.');
+            const fileExtension = lastDotIndex !== -1 ? fileOriginalName.slice(lastDotIndex + 1) : 'text';
+
+            // Create document object for MongoDB
+            const documentObject = {
+                user: _id,
+                name: fileOriginalName,
+                type: fileExtension,
+                fileSize
+            };
+
+            if (folderId) {
+                if (!isValidObjectId(folderId)) {
+                    return res.status(400).json({ message: "Invalid folder" });
+                }
+                documentObject.folder = folderId;
+            }
+
+            // Create a new MongoDB document
+            const newUpload = new UploadItem(documentObject);
+
+            // Save the document in MongoDB
+            await newUpload.save();
+
+            // Convert file buffer to file URI
+            const fileUri = bufferToDataUri(file);
+
+            // Upload file to Cloudinary using the buffer directly
+            const uploadCloudinary = await uploadOnCloudinary({
+                file: fileUri,
+                publicId: newUpload._id.toString(),
+                folderPath: "media_cloud/user_upload"
+            });
+
+            if (!uploadCloudinary.secure_url) {
+                return res.status(500).json({ message: "Error while uploading to Cloudinary" });
+            }
+
+            // Update the upload link in the document
+            newUpload.uploadLink = uploadCloudinary.secure_url;
+
+            // Save the updated document
+            await newUpload.save();
         }
 
-        // Create a new MongoDB document
-        const newUpload = new UploadItem(documentObject);
-
-        // Save the document in MongoDB
-        const saveDocumentPromise = newUpload.save();
-
-         // Convert file buffer to file URI
-         const fileeUri = bufferToDataUri(file);
-
-        // Upload file to Cloudinary using the buffer directly
-        const uploadCloudinary = await uploadOnCloudinary({
-            file: fileeUri,
-            publicId: newUpload._id.toString(),
-            folderPath: "media_cloud/user_upload"
-        });
-
-        if (!uploadCloudinary.secure_url) {
-            return res.status(500).json({ message: "Error while uploading to Cloudinary" });
-        }
-
-        // Perform save document and delete file at the same time
-        await saveDocumentPromise;
-
-        // Update the upload link in the document
-        newUpload.uploadLink = uploadCloudinary.secure_url;
-
-        // Save the updated document
-        await newUpload.save();
-
-        res.json({ message: "File uploaded successfully" });
+        res.json({ message: "Files uploaded successfully" });
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
         return res.status(500).json({ message: "Internal server error" });
     }
 }

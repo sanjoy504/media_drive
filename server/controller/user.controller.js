@@ -1,6 +1,7 @@
 import { isValidObjectId } from "mongoose";
 import UploadItem from "../models/uploadItems.model.js";
 import { deleteImageFromCloudinary } from "../util/cloudinary.js";
+import { getDataBetweenDate } from "../lib/dbOperations.js";
 
 export async function getUploadItems(req, res) {
     try {
@@ -28,7 +29,7 @@ export async function getUploadItems(req, res) {
                 .sort({ creatAt: -1 })
                 .skip(skip)
                 .limit(limit || 20)
-                .select('name type folder uploadLink'),
+                .select('name type folder uploadLink fileSize'),
             folder && UploadItem.findById(folder).select('name')
         ]);
 
@@ -52,7 +53,13 @@ export async function getRecentUploadItems(req, res) {
 
         const { limit, skip } = req.body;
 
-        const uploadItems = await UploadItem.find({ user: _id, type: { $nin: 'folder' } })
+        const query = { 
+            user: _id, 
+            type: { $nin: 'folder' },
+            creatAt: getDataBetweenDate({ type: 'days', value: 7 })
+        };
+
+        const uploadItems = await UploadItem.find(query)
             .sort({ creatAt: -1 })
             .limit(limit || 20)
             .skip(skip)

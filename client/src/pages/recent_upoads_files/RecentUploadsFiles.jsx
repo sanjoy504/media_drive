@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import CircularProgress from '@mui/material/CircularProgress';
 import { getRecentUploadsFiles } from "../../util/axiosHandler"
 import { useInfiniteScroll } from "../../lib/lib";
 import UploadItemsCards from "../../components/Cards"

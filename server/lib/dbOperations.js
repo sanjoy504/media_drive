@@ -1,3 +1,4 @@
+import { audioTypes, imageTypes, videoTypes } from "../constant/constant.js";
 import UploadItem from "../models/uploadItems.model.js";
 import { formatFileSize } from "../util/utils.js";
 
@@ -28,22 +29,21 @@ function formatPercentage(value) {
 
 
 // This function aggregates and calculates the total size for a specific type
-export async function getTotalSizesByTypes({ user, types, userTotalStorage }) {
+export async function getTotalSizesByTypes({ user, userTotalStorage }) {
     try {
         if (!user) {
             return;
         }
-
-        // Define a list of image types
-        const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'];
-
-        // Define a list of video file types
-        const videoTypes = ['mp4', 'avi', 'mov', 'wmv', 'flv'];
-
+         
+        //concat all ext types array
+        const types = imageTypes.concat(videoTypes, audioTypes, 'pdf');
+       
         const totalSizesInTypes = {
             image: 0,
             pdf: 0,
-            video: 0
+            video: 0,
+            audio: 0,
+            other: 0,
         };
 
         // Find all documents with the specified types
@@ -56,8 +56,12 @@ export async function getTotalSizesByTypes({ user, types, userTotalStorage }) {
                 totalSizesInTypes.image += bytes;
             } else if (videoTypes.includes(item.type)) {
                 totalSizesInTypes.video += bytes
+            } else if (audioTypes.includes(item.type)) {
+                totalSizesInTypes.audio += bytes
+            } else if (item.type === 'pdf') {
+                totalSizesInTypes.pdf += bytes
             } else {
-                totalSizesInTypes[item.type] += bytes;
+                totalSizesInTypes.other += bytes;
             }
 
         });
@@ -87,4 +91,23 @@ export async function getTotalSizesByTypes({ user, types, userTotalStorage }) {
         console.error("Error calculating total sizes by types:", error);
         throw new Error("Internal Server Error");
     }
-}
+};
+
+//get data from mongodb between provided months or days
+export function getDataBetweenDate({ type = 'months', value }) {
+    const currentDate = new Date();
+    const fromDate = new Date();
+
+    if (type === 'months') {
+        fromDate.setMonth(currentDate.getMonth() - value);
+    } else if (type === 'days') {
+        fromDate.setDate(currentDate.getDate() - value);
+    } else {
+        throw new Error('Please specify "months" or "days".');
+    }
+
+    return {
+        $gte: fromDate,
+        $lte: currentDate
+    };
+};

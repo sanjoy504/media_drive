@@ -21,7 +21,6 @@ router.get('/validate', authenticateUser, async (req, res) => {
         //get ser storage details like
         getTotalSizesByTypes({
             user: _id,
-            types: ['jpg', 'png', 'gif', 'pdf'],
             userTotalStorage: storage_limit || "3 GB"
         })
     ]);

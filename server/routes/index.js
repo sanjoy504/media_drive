@@ -6,7 +6,7 @@ import { deleteUploadFiles, getRecentUploadItems, getUploadItems, uploadSearchHa
 const router = Router();
 
 //File upload route
-router.post("/upload/file", multerUpload.single('file'), fileUpload);
+router.post("/upload/file", multerUpload.array('files', 10), fileUpload);
 
 // Folder upload route
 router.post("/upload/folder", folderUpload);
@@ -22,5 +22,11 @@ router.post("/search", uploadSearchHandler);
 
 //Delete upload fies
 router.delete("/delete/:fileId", deleteUploadFiles);
+
+router.post('/logout', (_, res) => {
+        res.clearCookie('auth-token'); // Clear the session cookie
+        res.status(200).send('Logged out successfully');
+});
+
 
 export default router;

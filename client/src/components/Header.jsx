@@ -9,13 +9,11 @@ function Header() {
 
       <div className="flex gap-3 items-center justify-between">
 
-        <SearchBar />
-
         <button onClick={toggleSidebar} className="text-gray-900 text-2xl font-bold small-screen:block hidden">
           <i className="bi bi-list"></i>
           <span className="sr-only">Toggle sidebar</span>
         </button>
-
+        <SearchBar />
       </div>
     </header>
   )

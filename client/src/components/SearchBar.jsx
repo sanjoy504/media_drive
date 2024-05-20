@@ -25,7 +25,7 @@ function SearchBar() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Getting Search Query Value From Url search params
-  const initialSearchQuery = searchParams.get('search') || "";
+  const initialSearchQuery = searchParams.get('q') || "";
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
 
   // Debounced search query
@@ -34,18 +34,18 @@ function SearchBar() {
   useEffect(() => {
     if (debouncedSearchQuery !== "") {
       if (pathname === "/search" || pathname === "/search/") {
-        setSearchParams({ search: debouncedSearchQuery }, { replace: true });
+        setSearchParams({ q: debouncedSearchQuery }, { replace: true });
       } else {
-        navigate(`/search?search=${debouncedSearchQuery}`);
+        navigate(`/search?q=${debouncedSearchQuery}`);
       }
     }else if (pathname === "/search" || pathname === "/search/" && initialSearchQuery !=='') {
         navigate(-1);
     };
   }, [debouncedSearchQuery]);
 
-  const handleSearch = (e) => {
-    const trimQuery = e.target.value.trim();
-    setSearchQuery(trimQuery);
+  const handleSearch = (event) => {
+    const userSearchText = event.target.value?.replace(/ +/g, ' ').trimStart();
+    setSearchQuery(userSearchText);
   };
 
   return (

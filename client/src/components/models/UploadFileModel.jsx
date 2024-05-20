@@ -35,6 +35,8 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
     const navigate = useNavigate();
 
     const [progress, setProgress] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -42,7 +44,7 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-    
+
         if (folderId) {
             formData.append('folderId', folderId); // Add folder id to FormData   
         }
@@ -67,14 +69,19 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                 handleClose();
 
                 if (pathname === '/') {
-                  
+
                     navigate('/uploads');
-                }else{
-                    reValidatePath(); 
+                } else {
+                    reValidatePath();
                 }
-                
+
+            } else {
+                setErrorMessage(response.data.message);
             }
         } catch (error) {
+            if (error.response.data) {
+                setErrorMessage(error.response.data.message);
+            }
             console.error('Error occurred:', error);
         } finally {
             setProgress(false)
@@ -84,6 +91,7 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
 
     return (
         <Dialog
+
             open={isOpen}
             onClose={handleClose}
             PaperProps={{
@@ -91,7 +99,12 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                 onSubmit: handleSubmit,
             }}
         >
-            <DialogTitle>Upload file</DialogTitle>
+            <DialogTitle>
+                Upload file
+                {errorMessage && (
+                    <p className="text-xs text-red-700">{errorMessage}</p>
+                )}
+            </DialogTitle>
 
             <DialogContent>
 
@@ -104,20 +117,20 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                     </Box>
                 ) : (
                     <>
-                        <DialogContentText>
-                            <small>Accept only Image and PDF files and size under 15MB</small>
+                        <DialogContentText className="max-w-80">
+                            <small className="text-xs">Accept only Image and PDF files and size under 15MB and one time 10 files</small>
                         </DialogContentText>
 
-                        <InputFileUpload />
+                        <InputFileUpload setErrorMessage={setErrorMessage} />
                     </>
                 )}
 
             </DialogContent>
             {!progress && (
-            <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button type="submit">Upoad</Button>
-            </DialogActions>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button type="submit">Upoad</Button>
+                </DialogActions>
             )}
         </Dialog>
     );
@@ -125,54 +138,73 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
 
 export default UploadFileModel;
 
-function InputFileUpload() {
+function InputFileUpload({ setErrorMessage }) {
 
-    const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
-    const [pdfPreviewUrl, setPdfPreviewUrl] = useState(null);
+    const [filePreviews, setFilePreviews] = useState([]);
 
+    const [fileList, setFileList] = useState([]);
+
+    // File selection handler
     const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            if (file.type.startsWith('image/')) {
-                const imageUrl = URL.createObjectURL(file);
-                setImagePreviewUrl(imageUrl);
-                setPdfPreviewUrl(null);  // Clear previous PDF preview if any
-                return () => URL.revokeObjectURL(imageUrl);
-            } else if (file.type === 'application/pdf') {
-                const pdfUrl = URL.createObjectURL(file);
-                setPdfPreviewUrl(pdfUrl);
-                setImagePreviewUrl(null);  // Clear previous image preview if any
-                return () => URL.revokeObjectURL(pdfUrl);
-            }
+        const newFiles = Array.from(event.target.files);
+        if (newFiles.length > 10 || fileList.length > 10) {
+            setErrorMessage('You can upload only 10 files at a time');
+            event.target.value = ''; // Clear the file input field
+            return;
         }
+
+        const previews = newFiles.map((file) => {
+            return { url: URL.createObjectURL(file), type: file.type };
+        });
+
+        //Add updateed new files at beggining of array
+        setFilePreviews([...previews, ...filePreviews,]);
+
+        // Concatenate the new files to the existing fileList
+        const updatedFiles = [...fileList, ...newFiles];
+        setFileList(updatedFiles);
+        updateInputFiles(updatedFiles);
+    };
+
+    const updateInputFiles = (files) => {
+        const dt = new DataTransfer();
+        files.forEach(file => dt.items.add(file));
+        document.getElementById('files').files = dt.files;
+    };
+
+    const handleRemoveFile = (index) => {
+        const updatedPreviews = [...filePreviews];
+        updatedPreviews.splice(index, 1);
+        setFilePreviews(updatedPreviews);
+
+        const updatedFiles = fileList.filter((_, i) => i !== index);
+        setFileList(updatedFiles);
+        updateInputFiles(updatedFiles);
     };
 
     return (
-        <div className="my-3 flex flex-col justify-center">
-            {imagePreviewUrl && (
-                <div className="my-3 relative">
-                    <img className="max-w-full max-h-40" src={imagePreviewUrl} alt="Preview" />
-                    <button
-                        type="button"
-                        className="absolute top-0 right-0 bg-gray-200 text-gray-900 w-8 h-8 rounded-full"
-                        onClick={() => setImagePreviewUrl(null)}
-                    >
-                        <i className="bi bi-x-lg"></i>
-                    </button>
-                </div>
-            )}
-            {pdfPreviewUrl && (
-                <div className="my-3 relative">
-                    <embed src={pdfPreviewUrl} type="application/pdf" width="100%" height="500px" />
-                    <button
-                        type="button"
-                        className="absolute top-0 right-0 bg-gray-200 text-gray-900 w-8 h-8 rounded-full"
-                        onClick={() => setPdfPreviewUrl(null)}
-                    >
-                        <i className="bi bi-x-lg"></i>
-                    </button>
-                </div>
-            )}
+        <div className="max-w-96 my-3 flex flex-col justify-center">
+            <div className="flex flex-row items-center overflow-x-auto">
+                {filePreviews.map((preview, index) => (
+                    <div key={index} className="relative flex-shrink-0 w-auto mr-4">
+                        {preview.type.startsWith('image/') && (
+                            <img className="max-w-full h-40 border border-slate-200 rounded-sm" src={preview.url} alt={`Preview ${index}`} />
+                        )}
+                        {preview.type === 'application/pdf' && (
+                            <embed className="max-h-52" src={preview.url} type="application/pdf" width="100%" height="500px" />
+                        )}
+
+                        <button
+                            type="button"
+                            className="absolute top-0 right-0 bg-gray-200 text-gray-900 w-8 h-8 rounded-full"
+                            onClick={() => handleRemoveFile(index)}
+                        >
+                            <i className="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                ))}
+            </div>
+
             <Button
                 className="sticky bottom-0 z-20"
                 component="label"
@@ -184,14 +216,17 @@ function InputFileUpload() {
                 Select file
                 <VisuallyHiddenInput
                     type="file"
-                    name="file"
-                    id="file"
+                    name="files"
+                    id="files"
                     onChange={handleFileChange}
                     accept="image/jpeg, image/png, image/gif, image/bmp, image/webp, application/pdf"
                     required
+                    multiple
                 />
             </Button>
-
+            {fileList.length > 0 && (
+            <small className="text-center text-gray-700 font-semibold my-4">Total {fileList.length} files select</small>
+            )}
         </div>
     );
 }

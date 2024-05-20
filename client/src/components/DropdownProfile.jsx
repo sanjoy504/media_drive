@@ -1,13 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { Avatar } from '@mui/material';
+import { getUserData } from '../context/User/getUserData';
+import { useDispatch } from 'react-redux';
+import { updateUserDataState } from '../context/User/userSlice';
+import { environmentVariables } from '../helper/helper';
 import Transition from '../lib/Transition';
-
-const UserAvatar = "https://avatars.githubusercontent.com/u/131693574?v=4";
-const userName = "Sanjoy504"
 
 function DropdownProfile({ align }) {
 
+  const dispatch = useDispatch();
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const { name, avatar } = getUserData();
 
   const trigger = useRef(null);
   const dropdown = useRef(null);
@@ -33,6 +40,25 @@ function DropdownProfile({ align }) {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+  const handleLogout = async () => {
+
+    try {
+      const response = await axios.create({
+        baseURL: environmentVariables.backendUrl,
+        withCredentials: true
+      }).post('/logout')
+
+      if (response.status === 200) {
+        //set user id null for render login component and prevent protect other route
+        dispatch(updateUserDataState({ userId: null }));
+      }
+    } catch (error) {
+      console.log(error);
+    };
+
+    setDropdownOpen(!dropdownOpen)
+  }
+
   return (
     <div className="relative inline-flex">
       <button
@@ -42,9 +68,12 @@ function DropdownProfile({ align }) {
         onClick={() => setDropdownOpen(!dropdownOpen)}
         aria-expanded={dropdownOpen}
       >
-        <img className="w-8 h-8 rounded-full" src={UserAvatar} width="32" height="32" alt="User" />
+        <Avatar src={avatar} className="w-5 h-5 border" alt="user avatar" />
         <div className="flex items-center truncate">
-          <span className="truncate ml-2 text-sm font-medium dark:text-slate-300 group-hover:text-slate-800 dark:group-hover:text-slate-200">{userName}</span>
+          <span className="truncate ml-2 text-sm font-medium text-slate-800">
+
+            {name}
+          </span>
           <svg className="w-3 h-3 shrink-0 ml-1 fill-current text-slate-400" viewBox="0 0 12 12">
             <path d="M5.9 11.4L.5 6l1.4-1.4 4 4 4-4L11.3 6z" />
           </svg>
@@ -67,7 +96,7 @@ function DropdownProfile({ align }) {
           onBlur={() => setDropdownOpen(false)}
         >
           <div className="pt-0.5 pb-2 px-3 mb-1 border-b border-slate-200 dark:border-slate-700">
-            <div className="font-medium text-slate-800 dark:text-slate-100">{userName}</div>
+            <div className="font-medium text-slate-800 dark:text-slate-100">{name}</div>
             <div className="text-xs text-slate-500 dark:text-slate-400 italic">Administrator</div>
           </div>
           <ul>
@@ -84,7 +113,7 @@ function DropdownProfile({ align }) {
               <Link
                 className="font-medium text-sm text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center py-1 px-3"
                 to="/signin"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
+                onClick={handleLogout}
               >
                 Sign Out
               </Link>

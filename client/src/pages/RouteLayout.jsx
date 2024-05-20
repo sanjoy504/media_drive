@@ -1,5 +1,8 @@
 import { Suspense, lazy } from "react"
-import { Route, Routes } from "react-router-dom"
+import { Navigate, Route, Routes } from "react-router-dom"
+
+//Login page component
+const LoginPage = lazy(() => import("./login/LoginPage"));
 
 //Home page component
 const Home = lazy(() => import("./home/Home"));
@@ -33,7 +36,9 @@ function RouteLayout() {
 
                 <Route exact path="/search" element={<SearchPage />} />
 
-                <Route path="*" element={<h1>No content</h1>} />
+                <Route exact path="/login" element={<LoginPage />} />
+
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Suspense>
     )
