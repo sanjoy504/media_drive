@@ -67,7 +67,11 @@ function FolderItems() {
             }
         })()
 
-    }, [folderId, page]);
+    }, [page]);
+
+    useEffect(() => {
+     reValidatePage();
+    }, [folderId])
 
     return (
         <>
