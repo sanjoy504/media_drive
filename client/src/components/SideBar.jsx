@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { toggleSidebar } from "../util/utils";
 import DropdownProfile from "../components/DropdownProfile";
 
@@ -15,7 +15,7 @@ function SideBar() {
         icon: "bi bi-folder-fill"
     },
     {
-        name: "Storage",
+        name: "Storage details",
         path: "/storage",
         icon: "bi bi-cloud-fill"
     },
@@ -47,20 +47,16 @@ function SideBar() {
 
                 {navLinks.map((data, index) => (
 
-                    <NavLink
+                    <Link
                         key={index + 1}
-                        end
                         to={data.path}
-                        className={({ isActive }) =>
-                            'py-2 px-2.5 ml-1 block transition duration-150 truncate text-sm' +
-                            (isActive ? 'text-blue-500 bg-blue-50 border-l-2 border-blue-700' : 'text-slate-800')
-                        }
+                        className={`py-2 px-2.5 ml-1 block transition duration-150 truncate text-sm ${pathname===data.path ? 'text-blue-600 bg-slate-50 border-l-2 border-blue-700' : 'text-slate-600'}`}
                     >
                         <div className="flex items-center space-x-2">
                             {data.icon && <i className={data.icon + " text-xl"}></i>}
                             <div>{data.name}</div>
                         </div>
-                    </NavLink>
+                    </Link>
                 ))}
 
             </div>

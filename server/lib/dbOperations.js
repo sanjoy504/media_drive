@@ -84,7 +84,7 @@ export async function getTotalSizesByTypes({ user, userTotalStorage }) {
         // Calculate total used storage
         const totalUsedStorageBytes = Object.values(totalSizesInTypes).reduce((acc, bytes) => acc + bytes, 0);
         const totalUsedStorageFormatted = formatFileSize(totalUsedStorageBytes);
-        const totalPercentageUsed = (totalUsedStorageBytes / userTotalStorageBytes * 100).toFixed(2) + '%';
+        const totalPercentageUsed = formatPercentage((totalUsedStorageBytes / userTotalStorageBytes * 100));
 
         return { storageUseInTypes, totalUsedStorage: totalUsedStorageFormatted, totalPercentageUsed };
     } catch (error) {

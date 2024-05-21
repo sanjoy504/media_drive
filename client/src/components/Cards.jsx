@@ -1,5 +1,5 @@
-import { Fragment, useState } from "react"
-import { Link } from "react-router-dom"
+import { Fragment, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { CircularProgress } from "@mui/material";
 import { validateUploadFilesTypes } from "../util/utils"
 import FileViewerModel from "./models/FileViewerModel"
@@ -73,13 +73,22 @@ export default function UploadItemsCards({ loading, uploadItems, reValidatePage 
 
 function FolderCard({ id, name }) {
 
+
+    const navigate = useNavigate();
+
+    const openFolder = () => {
+        navigate(`/uploads/${id}`)
+    }
+
+    const folderCardRef = usePreventContextMenu(openFolder);
+
     return (
-        <Link to={`/uploads/${id}`} className="bg-slate-50 p-1 w-full max-w-40 h-28 rounded-md shadow-sm flex flex-col justify-center items-center">
+        <div ref={folderCardRef} onClick={openFolder} className="bg-slate-50 p-1 w-full max-w-40 h-28 rounded-md shadow-sm flex flex-col justify-center items-center cursor-pointer">
             <i className="bi bi-folder-fill text-indigo-400 text-5xl"></i>
             <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full">
                 {name}
             </p>
-        </Link>
+        </div>
 
     )
 };

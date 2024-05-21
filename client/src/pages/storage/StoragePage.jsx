@@ -29,7 +29,7 @@ export default function StoragePage() {
   const { pdf, image, video, audio } = storageUseInTypes || {};
 
   return (
-    <>
+    <div className="px-2.5">
       <div className="my-2">
 
         <div className="w-full flex items-center justify-between">
@@ -40,7 +40,7 @@ export default function StoragePage() {
         </div>
 
         <div className="flex flex-col">
-          <small className="text-gray-700 font-medium">Total {totalUsedStorage} use out of {storage_limit}</small>
+          <small className="text-gray-700 font-medium">Total {totalUsedStorage.replace('Byte', 'KB')} use out of {storage_limit}</small>
           <div className="flex items-center h-auto">
             <div className="w-full mr-1">
               <BorderLinearProgress variant="determinate" value={progress} />
@@ -71,7 +71,7 @@ export default function StoragePage() {
 
         </div>
       </section>
-    </>
+    </div>
   )
 };
 
