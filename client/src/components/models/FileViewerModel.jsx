@@ -1,20 +1,42 @@
+import { useState } from "react";
+import { Backdrop, CircularProgress, Tooltip } from "@mui/material";
 import { deleteFileFromServer } from "../../util/axiosHandler";
 import { downloadImageAndPdf } from "../../util/utils";
 
 function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValidatePage }) {
 
-    if (!src || !type || !fileId) {
-        return null;
-    }
+    const [zoom, setZoom] = useState(100);
+    const [openBackdrop, setOpenBackdrop] = useState(false);
 
     const handleBackgroundClick = () => {
-        handleSetFileView({ fileId: null, name: null, src: null, type: null });
+
+        if (fileId) {
+            handleSetFileView({ fileId: null, name: null, src: null, type: null });
+        };
+
+        if (zoom !== 100) {
+            setZoom(100)
+        }
     };
 
     const handleChildClick = (event) => {
         event.stopPropagation();
     };
 
+    //Zoom image handler
+    const handleZoomImage = () => {
+        if (type === "image") {
+            if (zoom <= 100) {
+                setZoom(125)
+            } else if (zoom <= 125) {
+                setZoom(150)
+            } else {
+                setZoom(100);
+            }
+        }
+    };
+
+    //Share file handler
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
@@ -27,41 +49,75 @@ function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValida
 
     //Delete file
     const handleDeleteFile = async () => {
-        try {
-            const delteStatus = await deleteFileFromServer(fileId);
+        
+             setOpenBackdrop(true);
 
-            if (delteStatus === 200) {
-                reValidatePage()
-            }
-        } catch (error) {
-            console.log(error)
-        }
+            const { status } = await deleteFileFromServer(fileId);
+
+            if (status === 200) {
+                reValidatePage();
+                handleBackgroundClick();
+            };
+        
+            setOpenBackdrop(false)
+    };
+
+    // if src or type or fileId not provided return null
+    if (!src || !type || !fileId) {
+        return null;
     }
 
     return (
-        <div onClick={handleBackgroundClick} className="w-full h-full fixed top-0 left-0 z-50 bg-gray-950 bg-opacity-75 flex items-center justify-center">
-            <div className={`${type === "image" ? "bg-transparent": "bg-white"} w-fit h-fit max-w-96 max-h-[500px] small-screen:max-h-[450px] flex flex-col space-y-4 items-center justify-center rounded-sm mx-2 p-3`}>
-                {type === "image" ? (
-                    <img className="w-full h-full rounded-sm overflow-hidden select-none pointer-events-none" src={src} alt={title} />
-                ) : (
-                    <iframe className="w-full max-w-[350] h-96 overflow-x-hidden" src={src} title="PDF Preview" />
-                )}
+        <>
+            <div onClick={handleBackgroundClick} className="w-full scle h-full fixed top-0 left-0 z-50 bg-gray-950 bg-opacity-80 flex items-center justify-center">
 
+                <div className={`${type === "image" ? "bg-transparent" : "bg-white"} w-fit h-fit max-h-full max-w-96 flex flex-col space-y-4 items-center justify-center rounded-sm mx-2`}>
+                    {type === "image" ? (
+                        <img className={`w-full h-full rounded-sm overflow-hidden select-none pointer-events-none scale-[${zoom.toString() + "%"}] transition-all duration-300 ease-in-out`} src={src} alt={title} />
+                    ) : (
+                        <iframe className="w-full max-w-[350] h-96 overflow-x-hidden" src={src} title="PDF Preview" />
+                    )}
+
+                </div>
+
+                <div className="flex gap-8 absolute top-4 right-3 small-screen:mx-3 mx-5 text-xl">
+
+                    {type === "image" && (
+                        <Tooltip title={zoom === 150 ? "Zoom out" : "Zoom in"}>
+                            <button onClick={(event) => { handleChildClick(event); handleZoomImage(); }} type="button" className="bg-transparent text-white">
+                                <i className={`bi bi-zoom-${zoom === 150 ? "out" : "in"}`}></i>
+                                <span className="sr-only">Zoom in and out</span>
+                            </button>
+                        </Tooltip>
+                    )}
+                    <Tooltip title="Delete">
+                        <button onClick={(event) => { handleChildClick(event); handleDeleteFile() }} type="button" className="bg-transparent text-white">
+                            <i className="bi bi-trash"></i>
+                            <span className="sr-only">Delete</span>
+                        </button>
+                    </Tooltip>
+                    <Tooltip title="Share">
+                        <button onClick={(event) => { handleChildClick(event); handleShare() }} type="button" className="bg-transparent text-white">
+                            <i className="bi bi-share"></i>
+                            <span className="sr-only">Share</span>
+                        </button>
+                    </Tooltip>
+                    <Tooltip title="Download">
+                        <button onClick={(event) => { handleChildClick(event); downloadImageAndPdf(src, title); }} type="button" className="bg-transparent text-white">
+                            <i className="bi bi-download"></i>
+                            <span className="sr-only">Download</span>
+                        </button>
+                    </Tooltip>
+                </div>
             </div>
-            <div className="flex gap-4 absolute top-4 right-3">
-                <button onClick={handleDeleteFile} type="button" className="bg-transparent text-white">
-                    <i className="bi bi-trash text-base"></i> Delete
-                </button>
 
-                <button onClick={(event) => { handleChildClick(event); handleShare() }} type="button" className="bg-transparent text-white">
-                    <i className="bi bi-share text-base"></i> Share
-                </button>
-
-                <button onClick={(event) => { handleChildClick(event); downloadImageAndPdf(src, title); }} type="button" className="bg-transparent text-white">
-                    <i className="bi bi-download text-base"></i> Download
-                </button>
-            </div>
-        </div>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBackdrop}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+        </>
     );
 }
 

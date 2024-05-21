@@ -96,7 +96,7 @@ function App() {
         <SideBar />
         <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
           <Header />
-          <main className="py-2 px-2.5"> {/* Added padding */}
+          <main className="py-2">
             <RouteLayout />
           </main>
         </div>

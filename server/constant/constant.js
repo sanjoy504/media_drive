@@ -1,5 +1,5 @@
 // Define a list of image types
-const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff'];
+const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'avif'];
 
 // Define a list of video file types
 const videoTypes = ['mp4', 'avi', 'mov', 'wmv', 'flv'];

@@ -25,13 +25,16 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
 
     const handleClose = () => {
         setOpen(false);
-    };
-
-   const handleOnInputChange =()=>{
-        if(errorMessage){
+        if (errorMessage) {
             setErrorMessage(null);
         }
-       
+    };
+
+    const handleOnInputChange = () => {
+        if (errorMessage) {
+            setErrorMessage(null);
+        }
+
     }
     const handleSubmit = async (event) => {
 
@@ -43,7 +46,10 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
         if (!folderName) {
             setErrorMessage('Folder name is required');
             return;
-        }
+        } else if (folderName.length > 30) {
+            setErrorMessage('Folder name is to large plese make it under 30 characters');
+            return;
+        };
         const payload = {
             folderName,
             folderId
@@ -88,7 +94,6 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
         }
     };
 
-
     return (
         <Dialog
             open={isOpen}
@@ -114,6 +119,10 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                     </Box>
                 ) : (
                     <>
+                        <DialogContentText className="max-w-80">
+                            Folder name must be under 30 characters
+                        </DialogContentText>
+
                         <TextField
                             autoFocus
                             required
@@ -126,20 +135,17 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                             variant="standard"
                             onChange={handleOnInputChange}
                         />
-                        <DialogContentText>
-                            Please provide your folder name and create
-                        </DialogContentText>
+
                     </>
                 )}
-
 
             </DialogContent>
 
             {!progress && (
-            <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button type="submit">Add</Button>
-            </DialogActions>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button type="submit">Add</Button>
+                </DialogActions>
             )}
         </Dialog>
     );

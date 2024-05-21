@@ -30,7 +30,7 @@ export default function UploadOption({ buttonText = "Add new", buttonIcon = "bi 
 
     return (
         <>
-            <Button aria-describedby={id} variant="contained" className="flex gap-1 h-8" onClick={handleClick}>
+            <Button aria-describedby={id} variant="contained" className="flex gap-1 h-8 text-nowrap" onClick={handleClick}>
                 <i className={`${buttonIcon} text-xl`}></i>
                 <span className="capitalize text-sm">{buttonText}</span>
             </Button>

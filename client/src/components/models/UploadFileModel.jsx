@@ -39,6 +39,7 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
 
     const handleClose = () => {
         setOpen(false);
+        setErrorMessage(null);
     };
 
     const handleSubmit = async (event) => {
@@ -52,7 +53,10 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
         //const formJson = Object.fromEntries(formData.entries());
 
         try {
+
             setProgress(true);
+
+            setErrorMessage(null);
 
             const api = axios.create({
                 baseURL: environmentVariables.backendUrl,
@@ -84,11 +88,12 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
             }
             console.error('Error occurred:', error);
         } finally {
-            setProgress(false)
+            setProgress(false);
         }
 
     };
-
+  
+    
     return (
         <Dialog
 
@@ -146,12 +151,19 @@ function InputFileUpload({ setErrorMessage }) {
 
     // File selection handler
     const handleFileChange = (event) => {
+
         const newFiles = Array.from(event.target.files);
-        if (newFiles.length > 10 || fileList.length > 10) {
+
+        if (newFiles.length > 10) {
             setErrorMessage('You can upload only 10 files at a time');
             event.target.value = ''; // Clear the file input field
             return;
-        }
+        } else if (fileList.concat(newFiles).length > 10) {
+            setErrorMessage('You can upload only 10 files at a time');
+            return;
+        };
+
+        setErrorMessage(null);
 
         const previews = newFiles.map((file) => {
             return { url: URL.createObjectURL(file), type: file.type };
@@ -180,6 +192,7 @@ function InputFileUpload({ setErrorMessage }) {
         const updatedFiles = fileList.filter((_, i) => i !== index);
         setFileList(updatedFiles);
         updateInputFiles(updatedFiles);
+        setErrorMessage(null);
     };
 
     return (
@@ -225,7 +238,7 @@ function InputFileUpload({ setErrorMessage }) {
                 />
             </Button>
             {fileList.length > 0 && (
-            <small className="text-center text-gray-700 font-semibold my-4">Total {fileList.length} files select</small>
+                <small className="text-center text-gray-700 font-semibold my-4">Total {fileList.length} files select</small>
             )}
         </div>
     );

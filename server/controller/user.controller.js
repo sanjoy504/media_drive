@@ -33,6 +33,10 @@ export async function getUploadItems(req, res) {
             folder && UploadItem.findById(folder).select('name')
         ]);
 
+        if (folder && !folderDetails) {
+            return res.status(400).json({ message: 'No folder found' });
+        }
+
         const endOfData = (uploadItems.length < limit - 1);
 
         return res.status(200).json({ uploadItems, endOfData, folderDetails });

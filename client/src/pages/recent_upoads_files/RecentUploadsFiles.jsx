@@ -58,15 +58,17 @@ function RecentUploadsFiles() {
 
     return (
         <>
-            <div className="w-full h-auto flex justify-between items-center py-2 px-5 small-screen:px-3 sticky top-[70px] z-20 bg-white border-b border-b-slate-100">
-                <div className=" text-gray-900 text-xl small-screen:text-base font-bold">Recent files</div>
+            <div className="w-full h-auto flex justify-between items-center py-2 px-3.5 small-screen:px-2 sticky top-[70px] z-20 bg-white border-b border-b-slate-100 shadow-sm">
+                <div className=" text-gray-900 text-baze small-screen:text-sm font-bold line-clamp-2">Recent files</div>
                 <UploadOption folder={false} reValidatePath={reValidatePage} />
             </div>
 
-            <UploadItemsCards 
-            loading={loading}
-            uploadItems={uploadItems} 
-            reValidatePage={reValidatePage} />
+            <div className="mx-2.5">
+                <UploadItemsCards
+                    loading={loading}
+                    uploadItems={uploadItems}
+                    reValidatePage={reValidatePage} />
+            </div>
 
             <div ref={bottomObserverElement}></div>
         </>

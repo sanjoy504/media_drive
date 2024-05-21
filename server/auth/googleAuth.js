@@ -8,7 +8,7 @@ export async function googleAuth(req, res) {
         const userData = req.body;
 
         //Extract user email from request body user data
-        const { email } = userData;
+        const { avatar, email } = userData;
 
         //Find user by email
         let user = await User.findOne({ email }).select('name email avatar');
@@ -24,8 +24,15 @@ export async function googleAuth(req, res) {
         const tokenData = { id: user._id };
         const token = jwt.sign(tokenData, process.env.JWT_SECRET);
 
+        //check user google current avatar is match to user database avatar if not then update
+        if (!user.avatar.match(avatar)) {
+            user.avatar = avatar;
+        };
+
         //Save the token to the user document
         user.authToken = token;
+        
+        //save final updated user
         await user.save();
 
         // Calculate token expiration date (30 days from now)
@@ -45,7 +52,7 @@ export async function googleAuth(req, res) {
         res.cookie('auth-token', token, {
             httpOnly: true, // Use httpOnly for security
             sameSite: sameSiteSetting,
-            secure: secureFlag, 
+            secure: secureFlag,
             expires: tokenExpiration,
         });
 

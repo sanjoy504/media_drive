@@ -58,8 +58,8 @@ function SearchBar() {
             type="text"
             value={searchQuery}
             onChange={handleSearch}
-            placeholder="Search folders photos files"
-            className="small-screen:w-full w-96 rounded-md border border-gray-200 py-2.5 px-4 shadow-sm sm:text-xs outline-none focus:border-blue-500"
+            placeholder="Search folders photos and files"
+            className="small-screen:w-full w-96 small-screen:text-xs text-base rounded-md border border-gray-200 py-2.5 px-4 shadow-sm sm:text-xs outline-none focus:border-blue-500"
           />
           <span className="absolute inset-y-0 end-0 grid w-10 place-content-center border-l">
             <button

@@ -6,6 +6,7 @@ export const getClientUploadItems = async ({ folder = false, limit, skip, filter
     let data = [];
     let isDataEnd = false;
     let folderInfo = null;
+    let message = null;
 
     try {
 
@@ -32,17 +33,19 @@ export const getClientUploadItems = async ({ folder = false, limit, skip, filter
         status = response.status;
         data = uploadItems;
         isDataEnd = endOfData;
-        folderInfo = folderDetails
+        folderInfo = folderDetails;
+        message = response.data.message;
 
     } catch (error) {
         console.error(error);
         isDataEnd = true;
         if (error.response) {
-            status = error.response.status
+            status = error.response.status;
+            message = error.response.data.message
         }
     };
 
-    return { status, data, isDataEnd, folderInfo };
+    return { status, data, isDataEnd, folderInfo, message };
 };
 
 
@@ -88,6 +91,7 @@ export const getRecentUploadsFiles = async ({ limit, skip, filter }) => {
 export const deleteFileFromServer = async (fileId) => {
 
     let status = 500;
+    let message = null;
 
     try {
         const api = axios.create({
@@ -97,18 +101,16 @@ export const deleteFileFromServer = async (fileId) => {
 
         const response = await api.delete(`/delete/${fileId}`);
 
-        const { uploadItems, endOfData } = response.data || {};
-
         status = response.status;
-        data = uploadItems;
-        isDataEnd = endOfData;
+        message = response.data.message;
 
     } catch (error) {
         console.error(error);
         if (error.response) {
             status = error.response.status
+            message = error.response.data.message
         }
     };
 
-    return status;
+    return { status, message };
 }

@@ -1,4 +1,4 @@
-import documentNotFoundImage from "../../assets/images/documents-notfound.png"
+import documentNotFoundImage from "../../assets/images/media-notfound.avif"
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
@@ -6,6 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { environmentVariables } from "../../helper/helper";
 import { useInfiniteScroll } from "../../lib/lib";
 import UploadItemsCard from "../../components/Cards";
+import NotfoundMessages from "../../components/messages/NotfoundMessages";
 
 function SearchPage() {
 
@@ -77,10 +78,7 @@ function SearchPage() {
       )}
 
       {!loading && searchQuery !== "" && searchData.length === 0 && (
-        <div className="w-full my-20">
-          <img className="w-52 h-52 small-screen:w-40 small-screen:h-40 block ml-auto mr-auto" src={documentNotFoundImage} alt="No document found" />
-          <h2 className="text-gray-600 text-2xl small-screen:text-xl font-semibold text-center">No upload items found for this search</h2>
-        </div>
+       <NotfoundMessages message="Not upload items found for this search" />
       )}
 
       <div ref={observerElement}></div>

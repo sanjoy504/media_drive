@@ -43,7 +43,7 @@ function SideBar() {
                 </button>
             </div>
 
-            <div className="flex flex-col py-3 space-y-2 hover:text-gray-900 text-gray-700">
+            <div className="flex flex-col py-3 space-y-2 hover:text-gray-900 text-gray-700 relative">
 
                 {navLinks.map((data, index) => (
 
@@ -52,8 +52,8 @@ function SideBar() {
                         end
                         to={data.path}
                         className={({ isActive }) =>
-                            'py-2 px-2.5 block transition duration-150 truncate text-sm' +
-                            (isActive ? 'text-gray-900 bg-blue-50' : 'text-slate-700 hover:text-slate-600')
+                            'py-2 px-2.5 ml-1 block transition duration-150 truncate text-sm' +
+                            (isActive ? 'text-blue-500 bg-blue-50 border-l-2 border-blue-700' : 'text-slate-800')
                         }
                     >
                         <div className="flex items-center space-x-2">
