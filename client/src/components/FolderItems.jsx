@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getClientUploadItems } from "../util/axiosHandler"
-import UploadOption from "./UploadOption";
 import { useInfiniteScroll } from "../lib/lib";
 import NotfoundMessages from "./messages/NotfoundMessages";
 import UploadItemsGridSection from "./UploadItemsGridSection";
@@ -23,10 +22,19 @@ function FolderItems() {
 
     const bottomObserverElement = useInfiniteScroll(loadMore, loading, isAllDataLoad);
 
-    const reValidatePage = () => {
-        setPage(1);
-        setIsAllDataLoad(false);
-        setUploadItems([]);
+    const reValidatePage = (arg) => {
+
+        if (arg && arg.type === 'deleteFile') {
+             // Filter out the deleted items
+             const updatedUploadItems = uploadItems.filter(item => !arg.data?.includes(item._id));
+             // Update the state with the new list of items
+             setUploadItems(updatedUploadItems);
+        }else{
+            setPage(1);
+            setIsAllDataLoad(false);
+            setUploadItems([]);
+        }
+        
     }
 
     useEffect(() => {
@@ -82,7 +90,6 @@ function FolderItems() {
 
     return (
         <>
-            <div className="mx-2.5">
                 <UploadItemsGridSection
                     title={currentFolder}
                     pageLoading={page === 1 && loading ? true : false}
@@ -91,7 +98,6 @@ function FolderItems() {
                     reValidatePage={reValidatePage}
                     creatFolder={true}
                 />
-            </div>
 
             <div ref={bottomObserverElement}></div>
         </>

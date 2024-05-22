@@ -1,12 +1,11 @@
-import documentNotFoundImage from "../../assets/images/media-notfound.avif"
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import CircularProgress from '@mui/material/CircularProgress';
 import { environmentVariables } from "../../helper/helper";
 import { useInfiniteScroll } from "../../lib/lib";
-import UploadItemsCard from "../../components/Cards";
 import NotfoundMessages from "../../components/messages/NotfoundMessages";
+import UploadItemsGridSection from "../../components/UploadItemsGridSection";
 
 function SearchPage() {
 
@@ -17,6 +16,13 @@ function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [isAllDataLoad, setIsAllDataLoad] = useState(false);
+
+  const reValidatePage = () => {
+    setPage(1);
+    setIsAllDataLoad(false);
+    setUploadItems([]);
+}
+
 
   useEffect(() => {
     setSearchQuery(initialSearchQuery);
@@ -73,8 +79,15 @@ function SearchPage() {
         </div>
       )}
 
-      {!loading && searchData.length > 0 && (
-        <UploadItemsCard uploadItems={searchData} />
+      {!loading && searchQuery !== "" && searchData.length > 0 && (
+        <UploadItemsGridSection
+        title={`Result for: ${searchQuery}`}
+        pageLoading={page === 1 && loading ? true : false}
+        loading={loading}
+        uploadItems={searchData}
+        reValidatePage={reValidatePage} 
+        uploadOption={false}
+        />
       )}
 
       {!loading && searchQuery !== "" && searchData.length === 0 && (

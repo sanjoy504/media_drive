@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { getRecentUploadsFiles } from "../../util/axiosHandler"
 import { useInfiniteScroll } from "../../lib/lib";
 import UploadItemsGridSection from "../../components/UploadItemsGridSection"
-import UploadOption from "../../components/UploadOption";
 
 function RecentUploadsFiles() {
 
@@ -19,7 +18,6 @@ function RecentUploadsFiles() {
     const reValidatePage = () => {
         setPage(1);
         setIsAllDataLoad(false);
-        setLoading(false);
         setUploadItems([]);
     }
 
@@ -58,14 +56,13 @@ function RecentUploadsFiles() {
 
     return (
         <>
-            <div className="mx-2.5">
-                <UploadItemsGridSection
-                    title="Recent files"
-                    pageLoading={page === 1 && loading ? true : false}
-                    loading={loading}
-                    uploadItems={uploadItems}
-                    reValidatePage={reValidatePage} />
-            </div>
+            <UploadItemsGridSection
+                title="Recent files"
+                pageLoading={page === 1 && loading ? true : false}
+                loading={loading}
+                uploadItems={uploadItems}
+                reValidatePage={reValidatePage}
+            />
 
             <div ref={bottomObserverElement}></div>
         </>
