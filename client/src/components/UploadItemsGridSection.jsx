@@ -155,7 +155,7 @@ export default function UploadItemsGridSection({
                                     functions={functions}
                                 />
                                 <div className="absolute right-0 top-0 z-10">
-                                    <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5" aria-label="select file" />
+                                    <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5" aria-label="select file" checked={false} />
                                 </div>
                             </div>
                         )}
@@ -168,7 +168,7 @@ export default function UploadItemsGridSection({
                                     functions={functions}
                                 />
                                 <div className="absolute right-0 top-0 z-10">
-                                    <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5" aria-label="select file" />
+                                    <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5" aria-label="select file" checked={false} />
                                 </div>
                             </div>
                         )}
