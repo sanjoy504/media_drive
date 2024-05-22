@@ -21,7 +21,7 @@ router.post("/recent_uploads_files", getRecentUploadItems);
 router.post("/search", uploadSearchHandler);
 
 //Delete upload fies
-router.delete("/delete/:fileId", deleteUploadFiles);
+router.post("/delete", deleteUploadFiles);
 
 router.post('/logout', (_, res) => {
         res.clearCookie('auth-token'); // Clear the session cookie

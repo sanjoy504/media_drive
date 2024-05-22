@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import UploadItemsCard from "../components/Cards"
 import { getClientUploadItems } from "../util/axiosHandler"
 import UploadOption from "./UploadOption";
 import { useInfiniteScroll } from "../lib/lib";
 import NotfoundMessages from "./messages/NotfoundMessages";
+import UploadItemsGridSection from "./UploadItemsGridSection";
 
 
 function FolderItems() {
@@ -82,16 +82,15 @@ function FolderItems() {
 
     return (
         <>
-            <div className={`w-full h-auto ${loading && page === 1 ? "hidden" : "block"} flex justify-between items-center py-2 px-3.5 small-screen:px-2 sticky top-[70px] z-20 border-b bg-white border-b-slate-100  shadow-sm`}>
-                <h2 className="text-gray-900 text-base small-screen:text-sm font-bold mr-3">{currentFolder}</h2>
-                <UploadOption reValidatePath={reValidatePage} />
-            </div>
-
             <div className="mx-2.5">
-                <UploadItemsCard
+                <UploadItemsGridSection
+                    title={currentFolder}
+                    pageLoading={page === 1 && loading ? true : false}
                     loading={loading}
                     uploadItems={uploadItems}
-                    reValidatePage={reValidatePage} />
+                    reValidatePage={reValidatePage}
+                    creatFolder={true}
+                />
             </div>
 
             <div ref={bottomObserverElement}></div>

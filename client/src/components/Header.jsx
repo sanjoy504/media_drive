@@ -5,7 +5,7 @@ import SearchBar from "./SearchBar";
 function Header() {
 
   return (
-    <header className="sticky top-0 bg-white border-b border-b-slate-200 px-5 py-4">
+    <header className="sticky top-0 z-40 bg-white border-b border-b-slate-200 px-5 py-4">
 
       <div className="flex gap-3 items-center justify-between">
 

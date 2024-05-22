@@ -26,23 +26,22 @@ const uploadOnCloudinary = async ({ file, publicId, folderPath }) => {
     }
 };
 
-const deleteImageFromCloudinary = async ({ publicId }) => {
-
+const deleteFromCloudinary = async (publicIds) => {
     try {
-        if (!publicId) {
-            return { status: 404, message: "publicId is missing" };
+        if (!publicIds || !Array.isArray(publicIds) || publicIds.length === 0) {
+            return { status: 404, message: "publicIds is missing or invalid" };
         }
 
-        //delete the image from cloudinary
-        const cloudinaryResponse = await cloudinary.api.delete_resources([publicId], { type: 'upload', resource_type: 'image' });
+        // Delete the images from Cloudinary
+        const cloudinaryResponse = await cloudinary.api.delete_resources(publicIds, { type: 'upload', resource_type: 'image' });
 
         return cloudinaryResponse;
 
     } catch (error) {
-        console.log(error)
-        return { status: 500, message: "Error while delete image from cloudinary" };
+        console.log(error);
+        return { status: 500, message: "Error while deleting images from Cloudinary" };
     }
-
 };
 
-export { uploadOnCloudinary, deleteImageFromCloudinary };
+
+export { uploadOnCloudinary, deleteFromCloudinary };

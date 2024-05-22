@@ -88,7 +88,7 @@ export const getRecentUploadsFiles = async ({ limit, skip, filter }) => {
     return { status, data, isDataEnd };
 };
 
-export const deleteFileFromServer = async (fileId) => {
+export const deleteFileFromServer = async (fileIds) => {
 
     let status = 500;
     let message = null;
@@ -99,7 +99,9 @@ export const deleteFileFromServer = async (fileId) => {
             withCredentials: true
         })
 
-        const response = await api.delete(`/delete/${fileId}`);
+        const response = await api.post(`/delete`, {
+            fileIds
+        });
 
         status = response.status;
         message = response.data.message;

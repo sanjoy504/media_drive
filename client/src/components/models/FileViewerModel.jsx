@@ -38,7 +38,7 @@ function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValida
 
     const handleDeleteFile = async () => {
         setOpenBackdrop(true);
-        const { status } = await deleteFileFromServer(fileId);
+        const { status } = await deleteFileFromServer([fileId]);
         if (status === 200) {
             reValidatePage();
             handleBackgroundClick();
@@ -57,7 +57,7 @@ function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValida
                 className="w-full h-full fixed top-0 left-0 z-50 bg-gray-950 bg-opacity-80 flex items-center justify-center"
             >
                 <div
-                    className={`${type === "image" ? "bg-transparent" : "bg-white"} w-fit h-fit max-h-full max-w-96 flex flex-col space-y-4 items-center justify-center rounded-sm mx-2`}
+                    className={`${type === "image" ? "bg-transparent" : "bg-white"} w-fit h-fit max-h-[80%] max-w-96 flex flex-col space-y-4 items-center justify-center rounded-sm mx-2`}
                 >
                     {type === "image" ? (
                         <img
@@ -67,7 +67,7 @@ function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValida
                             style={{ transform: `scale(${zoom / 100})` }}
                         />
                     ) : (
-                        <iframe className="w-full max-w-[350] h-96 overflow-x-hidden" src={src} title="PDF Preview" />
+                        <iframe className="w-full max-w-[350px] h-96 overflow-x-hidden" src={src} title="PDF Preview" />
                     )}
                 </div>
 

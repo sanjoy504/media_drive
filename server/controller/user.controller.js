@@ -1,6 +1,6 @@
 import { isValidObjectId } from "mongoose";
 import UploadItem from "../models/uploadItems.model.js";
-import { deleteImageFromCloudinary } from "../util/cloudinary.js";
+import { deleteFromCloudinary } from "../util/cloudinary.js";
 import { getDataBetweenDate } from "../lib/dbOperations.js";
 
 export async function getUploadItems(req, res) {
@@ -57,8 +57,8 @@ export async function getRecentUploadItems(req, res) {
 
         const { limit, skip } = req.body;
 
-        const query = { 
-            user: _id, 
+        const query = {
+            user: _id,
             type: { $nin: 'folder' },
             creatAt: getDataBetweenDate({ type: 'days', value: 7 })
         };
@@ -117,29 +117,33 @@ export async function uploadSearchHandler(req, res) {
 
 // Delete upload files
 export async function deleteUploadFiles(req, res) {
-
     try {
-        const { fileId } = req.params;
+        const { fileIds } = req.body;
 
-        if (!fileId) {
-            return res.status(400).send({ message: "Invalid request Missing params." });
+        if (!fileIds || !Array.isArray(fileIds) || fileIds.length === 0) {
+            return res.status(400).send({ message: "Invalid request. Missing or invalid fileIds." });
         }
 
-        //Delete file from database
-        const deleteFileFromDatabase = await UploadItem.deleteOne({ _id: fileId });
-    
+        // Delete files from database
+        const deleteFileFromDatabase = await UploadItem.deleteMany({ _id: { $in: fileIds } });
+
         if (deleteFileFromDatabase.deletedCount > 0) {
+          
+            const publicIds = fileIds.map(fileId => `media_cloud/user_upload/${fileId}`);
 
-            await deleteImageFromCloudinary({ publicId: `media_cloud/user_upload/${fileId}` });
+            //Delete files from Cloudinary
+            const cloudinaryResponse = await deleteFromCloudinary(publicIds);
 
-            return res.status(200).send({ message: "File deleted successfully" });
+            return res.status(200).send({
+                message: `${deleteFileFromDatabase.deletedCount} file(s) deleted successfully`,
+                cloudinaryResponse
+            });
         } else {
-            return res.status(400).send({ message: "Failed to delete file or file not found" });
+            return res.status(400).send({ message: "Failed to delete files or files not found" });
         }
 
     } catch (error) {
         console.error("Error:", error);
         return res.status(500).send({ message: "Internal server error while deleting files" });
     }
-
 }
