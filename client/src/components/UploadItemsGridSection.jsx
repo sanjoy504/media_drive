@@ -94,21 +94,23 @@ export default function UploadItemsGridSection({
 
     return (
         <>
-            <div className={`w-full h-auto ${pageLoading ? 'hidden' : 'block'} py-1 px-3.5 small-screen:px-0 sticky top-[70px] z-20 bg-white border-b border-b-slate-100 shadow-sm`}>
+            <div className={`w-full h-auto ${pageLoading ? 'hidden' : 'block'} py-1 px-3.5 small-screen:px-2.5 sticky top-[70px] z-20 bg-white border-b border-b-slate-100 shadow-sm`}>
 
-                {uploadItems.length >0 && (
                 <div className="w-full h-auto flex justify-between">
                     <div>
                         <div className="text-gray-900 text-baze small-screen:text-sm font-bold line-clamp-2">{title}</div>
-                        <label htmlFor="edit-file-mode-switch" className="text-xs">Edit mode</label>
-                        <Switch id="edit-file-mode-switch" onChange={handleSwitch} size="small" />
+                        {uploadItems.length > 0 && (
+                            <>
+                                <label htmlFor="edit-file-mode-switch" className="text-xs">Edit mode</label>
+                                <Switch id="edit-file-mode-switch" onChange={handleSwitch} size="small" />
+                            </>
+                        )}
                     </div>
 
                     {uploadOption && (
                         <UploadDropdownOption folder={creatFolder} reValidatePath={reValidatePage} />
                     )}
                 </div>
-                )}
 
                 <div ref={deleteOptionContainerRef} className="hidden my-2">
                     <div className="flex gap-2 items-center justify-between">
