@@ -44,8 +44,11 @@ function SearchBar() {
   }, [debouncedSearchQuery]);
 
   const handleSearch = (event) => {
-    const userSearchText = event.target.value?.replace(/ +/g, ' ').trimStart();
-    setSearchQuery(userSearchText);
+    const userSearchText = event.target.value?.replace(/ +/g, ' ').trimStart().trimEnd();
+    if (userSearchText !== ' ') {
+      setSearchQuery(userSearchText);
+    }
+
   };
 
   return (

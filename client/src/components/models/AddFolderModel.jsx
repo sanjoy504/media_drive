@@ -67,7 +67,7 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                 withCredentials: true
             });
 
-            const response = await api.post('/upload/folder', payload);
+            const response = await api.post('/user/upload/folder', payload);
 
             if (response.status === 200) {
 

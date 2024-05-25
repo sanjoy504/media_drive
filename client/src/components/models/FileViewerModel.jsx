@@ -40,7 +40,10 @@ function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValida
         setOpenBackdrop(true);
         const { status } = await deleteFileFromServer([fileId]);
         if (status === 200) {
-            reValidatePage();
+            reValidatePage({
+                type: "deleteFile",
+                data: [fileId],
+            });
             handleBackgroundClick();
         }
         setOpenBackdrop(false);

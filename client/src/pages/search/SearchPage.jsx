@@ -49,7 +49,7 @@ function SearchPage() {
           withCredentials: true,
         });
 
-        const response = await api.post('/search', {
+        const response = await api.post('/user/search', {
           query: searchQuery,
           limit: 30,
           skip: searchData.length,

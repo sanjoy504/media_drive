@@ -26,7 +26,7 @@ export const getClientUploadItems = async ({ folder = false, limit, skip, filter
             baseURL: environmentVariables.backendUrl,
             withCredentials: true
         })
-        const response = await api.post('/get_uploads', payload);
+        const response = await api.post('/user/get_uploads', payload);
 
         const { uploadItems, endOfData, folderDetails } = response.data || {};
 
@@ -69,7 +69,7 @@ export const getRecentUploadsFiles = async ({ limit, skip, filter }) => {
             withCredentials: true
         })
 
-        const response = await api.post('/recent_uploads_files', payload);
+        const response = await api.post('/user/recent_uploads_files', payload);
 
         const { uploadItems, endOfData } = response.data || {};
 
@@ -99,7 +99,7 @@ export const deleteFileFromServer = async (fileIds) => {
             withCredentials: true
         })
 
-        const response = await api.post(`/delete`, {
+        const response = await api.post(`/user/assets/delete`, {
             fileIds
         });
 

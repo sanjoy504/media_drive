@@ -4,7 +4,6 @@ import cors from "cors"
 import cookieParser from "cookie-parser";
 import connectToMongo from "./db/mongodb.js"
 import serverRoutes from "./routes/index.js"
-import authRoute from "./auth/userAuth.js"
 import authenticateUser from "./middleware/authenticateUser.js"
 import { googleAuth } from "./auth/googleAuth.js"
 
@@ -53,12 +52,12 @@ app.get('/', function (_, res) {
   res.json({ message: "Welcome to media cloud api server" })
 });
 
+/********* Define All Routes ***********/
+
+//google login & signup auth route
 app.post("/api/v1/login/google_login", googleAuth)
 
-//user auth route
-app.use('/api/v1/user', authRoute)
-
-//Server all routes
-app.use('/api/v1', authenticateUser, serverRoutes);
+// user related endpoints routes
+app.use('/api/v1/user', authenticateUser, serverRoutes);
 
 

@@ -2,6 +2,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
+// google auth login and sign up 
 export async function googleAuth(req, res) {
 
     try {

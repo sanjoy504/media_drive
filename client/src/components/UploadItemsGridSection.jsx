@@ -2,11 +2,12 @@ import { Fragment, useCallback, memo, useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Checkbox, CircularProgress, Switch } from "@mui/material";
 import { validateUploadFilesTypes } from "../util/utils";
+import { deleteFileFromServer } from "../util/axiosHandler";
 import FileViewerModel from "./models/FileViewerModel";
 import usePreventContextMenu from "../hooks/contextMenuEvent";
 import LazyLoadingImage from "../lib/LazyLoadingImage";
-import { deleteFileFromServer } from "../util/axiosHandler";
 import UploadDropdownOption from "./UploadDropdownOption";
+import NotfoundMessages from "./messages/NotfoundMessages";
 
 export default function UploadItemsGridSection({
     title = "My Uploads",
@@ -86,22 +87,18 @@ export default function UploadItemsGridSection({
                 <CircularProgress />
             </div>
         );
-    }
-
-    if (!uploadItems) {
-        return null;
     };
 
     return (
         <>
             <div className={`w-full h-auto ${pageLoading ? 'hidden' : 'block'} py-1 px-3.5 small-screen:px-2.5 sticky top-[70px] z-20 bg-white border-b border-b-slate-100 shadow-sm`}>
 
-                <div className="w-full h-auto flex justify-between">
+                <div className="w-full h-auto flex justify-between items-center">
                     <div>
-                        <div className="text-gray-900 text-baze small-screen:text-sm font-bold line-clamp-2">{title}</div>
+                        <h3 className="text-gray-900 text-baze small-screen:text-xs font-bold line-clamp-2">{title}</h3>
                         {uploadItems.length > 0 && (
                             <>
-                                <label htmlFor="edit-file-mode-switch" className="text-xs">Edit mode</label>
+                                <label htmlFor="edit-file-mode-switch" className="text-xs">Option mode</label>
                                 <Switch id="edit-file-mode-switch" onChange={handleSwitch} size="small" />
                             </>
                         )}
@@ -112,71 +109,76 @@ export default function UploadItemsGridSection({
                     )}
                 </div>
 
+                {uploadItems.length > 0 && (
                 <div ref={deleteOptionContainerRef} className="hidden my-2">
                     <div className="flex gap-2 items-center justify-between">
                         <div className="flex gap-2 items-center">
                             <small className="text-gray-600 font-medium">
-                                <span className="text-blue-700 mr-1">{selectedFileIds.length}</span>
-                                file select
+                                <span className="text-blue-700 mr-1 font-semibold">{selectedFileIds.length}</span>
+                                {selectedFileIds.length > 1 ? "files": "file "} select
                             </small>
 
                             {selectedFileIds.length > 0 && (
                                 <button
                                     onClick={handleDeleteFile}
                                     type="button"
-                                    className="text-red-600 text-sm w-6 h-6 flex justify-center items-center rounded-full bg-blue-50 shadow-xl shadow-blue-100 mr-1"
+                                    className="text-red-600 mr-1 p-0.5"
                                 >
                                     <i className="bi bi-trash"></i>
                                     <span className="sr-only">Delete</span>
                                 </button>
                             )}
                         </div>
-                        <div>
-                            <label htmlFor="select-all-file" className="text-sm text-gray-900 font-semibold mr-1.5">Select all</label>
-                            <Checkbox onChange={() => handleSelectFile("all")} className="w-3 h-3" aria-label="select file" id="select-all-file" checked={selectedFileIds.length === uploadItems.length ? true : false} />
+                        <div className="small-screen:mx-2 mx-5">
+                            <label htmlFor="select-all-file" className="text-sm text-gray-900 font-medium mr-1.5">Select all</label>
+                            <Checkbox onChange={() => handleSelectFile("all")} className="w-3 h-3" aria-label="select file" id="select-all-file" checked={uploadItems.length > 0 && selectedFileIds.length === uploadItems.length ? true : false} />
                         </div>
                     </div>
                 </div>
-
+                )}
             </div>
 
-            <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 my-2.5 px-2.5">
-                {uploadItems.map((data) => (
-                    <Fragment key={data._id}>
-                        {validateUploadFilesTypes(data.type) === "folder" && (
-                            <div className="relative">
-                                <FolderCard id={data._id} name={data.name} />
-                            </div>
-                        )}
-                        {validateUploadFilesTypes(data.type) === "image" && (
-                            <div className="relative">
-                                <ImageCard
-                                    id={data._id}
-                                    src={data.uploadLink}
-                                    alt={data.name}
-                                    functions={functions}
-                                />
-                                <div className="absolute right-0 top-0 z-10">
-                                    <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden" aria-label="select file" />
+            {uploadItems.length > 0 ? (
+                <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 my-2.5 px-2.5">
+                    {uploadItems.map((data) => (
+                        <Fragment key={data._id}>
+                            {validateUploadFilesTypes(data.type) === "folder" && (
+                                <div className="relative">
+                                    <FolderCard id={data._id} name={data.name} />
                                 </div>
-                            </div>
-                        )}
-                        {validateUploadFilesTypes(data.type) === "pdf" && (
-                            <div className="relative">
-                                <PdfCard
-                                    id={data._id}
-                                    name={data.name}
-                                    pdfLink={data.uploadLink}
-                                    functions={functions}
-                                />
-                                <div className="absolute right-0 top-0 z-10">
-                                    <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden" aria-label="select file" />
+                            )}
+                            {validateUploadFilesTypes(data.extension) === "image" && (
+                                <div className="relative">
+                                    <ImageCard
+                                        id={data._id}
+                                        src={data.uploadLink}
+                                        alt={data.name}
+                                        functions={functions}
+                                    />
+                                    <div className="absolute right-0 top-0 z-10">
+                                        <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden" aria-label="select file" />
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                    </Fragment>
-                ))}
-            </div>
+                            )}
+                            {validateUploadFilesTypes(data.extension) === "pdf" && (
+                                <div className="relative">
+                                    <PdfCard
+                                        id={data._id}
+                                        name={data.name}
+                                        pdfLink={data.uploadLink}
+                                        functions={functions}
+                                    />
+                                    <div className="absolute right-0 top-0 z-10">
+                                        <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden" aria-label="select file" />
+                                    </div>
+                                </div>
+                            )}
+                        </Fragment>
+                    ))}
+                </div>
+            ) : (
+                <NotfoundMessages message="You not upload anything" />
+            )}
             {loading && uploadItems?.length > 0 && (
                 <div className="w-full h-auto flex justify-center items-center my-6">
                     <CircularProgress />

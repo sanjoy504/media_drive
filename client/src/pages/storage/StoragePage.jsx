@@ -58,16 +58,16 @@ export default function StoragePage() {
         <div className="text-4xl flex flex-row overflow-x-scroll gap-5 scrollbar-hidden">
 
           { /**** Images Detaile **** */}
-          <FileDetailsCard title="Images" icon="image-fill" iconColor="blue-600" size={image?.size || "0 KB"} percentage={image?.percentageUse || "0%"} />
+          <FileDetailsCard title="Images" icon="image-fill" iconColor="text-blue-600" size={image?.size || "0 KB"} percentage={image?.percentageUse || "0%"} />
 
           { /**** PDF files Detaile **** */}
-          <FileDetailsCard title="PDF files" icon="filetype-pdf" iconColor="red-600" size={pdf?.size || "0 KB"} percentage={pdf?.percentageUse || "0%"} />
+          <FileDetailsCard title="PDF files" icon="filetype-pdf" iconColor="text-red-600" size={pdf?.size || "0 KB"} percentage={pdf?.percentageUse || "0%"} />
 
           { /**** Video files Detaile **** */}
-          <FileDetailsCard title="Video files" icon="filetype-mp4" iconColor="blue-600" size={video?.size || "0 KB"} percentage={video?.percentageUse || "0%"} />
+          <FileDetailsCard title="Video files" icon="filetype-mp4" iconColor="text-yellow-600" size={video?.size || "0 KB"} percentage={video?.percentageUse || "0%"} />
 
           { /**** Audio files Detaile **** */}
-          <FileDetailsCard title="Audio files" icon="file-earmark-music" iconColor="purple-600" size={audio?.size || "0 KB"} percentage={audio?.percentageUse || "0%"} />
+          <FileDetailsCard title="Audio files" icon="file-earmark-music" iconColor="text-purple-600" size={audio?.size || "0 KB"} percentage={audio?.percentageUse || "0%"} />
 
         </div>
       </section>
@@ -79,7 +79,7 @@ function FileDetailsCard({ title, icon, iconColor, size, percentage }) {
   return (
     <div className="w-auto h-auto flex flex-col space-y-2 items-center py-2 px-5 border border-slate-200 shadow-sm rounded-md">
       <div className="flex items-center gap-2">
-        <i className={`bi ${'bi-' + icon} ${'text-' + iconColor}`}></i>
+        <i className={`bi ${'bi-' + icon} ${iconColor}`}></i>
         <div className="text-nowrap text-sm font-medium">
           <div className="text-gray-700">{size.replace('Byte', 'kB')}</div>
           <div className="text-gray-600">{percentage}</div>

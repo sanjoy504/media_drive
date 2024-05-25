@@ -63,7 +63,7 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                 withCredentials: true
             });
 
-            const response = await api.post('/upload/file', formData, {
+            const response = await api.post('/user/upload/file', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -83,8 +83,8 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
                 setErrorMessage(response.data.message);
             }
         } catch (error) {
-            if (error.response.data) {
-                setErrorMessage(error.response.data.message);
+            if (error.response) {
+                setErrorMessage(error.response?.data.message);
             }
             console.error('Error occurred:', error);
         } finally {

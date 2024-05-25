@@ -1,8 +1,38 @@
 import { isValidObjectId } from "mongoose";
+import User from "../models/user.model.js";
 import UploadItem from "../models/uploadItems.model.js";
 import { deleteFromCloudinary } from "../util/cloudinary.js";
 import { getDataBetweenDate } from "../lib/dbOperations.js";
+import { getTotalSizesByTypes } from "../lib/dbOperations.js";
 
+// upload items select fields
+const uploadItemsSelectFields = "name type folder uploadLink size extension";
+
+//validate user controller if user authenticated send user details to client 
+export async function validateUser(req, res){
+
+    const user = req.user;
+
+    //get this user data from user authentication middleware
+    const { _id, storage_limit } = user || {};
+
+    const [userDetails, storageDetails] = await Promise.all([
+        
+        // get user details
+        User.findById(_id).select('name avatar email storage_limit'),
+         
+        //get ser storage details like
+        getTotalSizesByTypes({
+            user: _id,
+            userTotalStorage: storage_limit || "3 GB"
+        })
+    ]);
+
+    res.json({ message: 'success', userDetails, storageDetails });
+
+};
+
+//Get user upload items
 export async function getUploadItems(req, res) {
     try {
 
@@ -29,7 +59,7 @@ export async function getUploadItems(req, res) {
                 .sort({ creatAt: -1 })
                 .skip(skip)
                 .limit(limit || 20)
-                .select('name type folder uploadLink fileSize'),
+                .select(uploadItemsSelectFields),
             folder && UploadItem.findById(folder).select('name')
         ]);
 
@@ -47,7 +77,7 @@ export async function getUploadItems(req, res) {
     }
 };
 
-//Get recent upload files
+//Get user recent upload files
 export async function getRecentUploadItems(req, res) {
     try {
 
@@ -67,7 +97,7 @@ export async function getRecentUploadItems(req, res) {
             .sort({ creatAt: -1 })
             .limit(limit || 20)
             .skip(skip)
-            .select('name type folder uploadLink');
+            .select(uploadItemsSelectFields);
 
         const endOfData = (uploadItems.length < limit - 1);
 
@@ -79,7 +109,7 @@ export async function getRecentUploadItems(req, res) {
     }
 };
 
-//Search upload items handler
+//Search user upload items handler
 export async function uploadSearchHandler(req, res) {
     try {
 
@@ -104,7 +134,7 @@ export async function uploadSearchHandler(req, res) {
             .sort({ creatAt: -1 })
             .limit(limit)
             .skip(skip)
-            .select('name type folder uploadLink');
+            .select(uploadItemsSelectFields);
 
         const endOfData = (uploadItems.length < limit);
 
@@ -115,7 +145,7 @@ export async function uploadSearchHandler(req, res) {
     }
 };
 
-// Delete upload files
+// Delete user upload assets
 export async function deleteUploadFiles(req, res) {
     try {
         const { fileIds } = req.body;
@@ -125,7 +155,7 @@ export async function deleteUploadFiles(req, res) {
         }
 
         // Delete files from database
-        const deleteFileFromDatabase = await UploadItem.deleteMany({ _id: { $in: fileIds } });
+        const deleteFileFromDatabase = await UploadItem.deleteMany({ _id: { $in: fileIds },  });
 
         if (deleteFileFromDatabase.deletedCount > 0) {
           

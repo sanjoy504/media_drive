@@ -6,6 +6,10 @@ const uploadItemSchema = new Schema({
         ref: 'User',
         required: true,
     },
+    folder: {
+        type: Schema.Types.ObjectId,
+        ref: 'UploadItem',
+    },
     name: {
         type: String,
         required: true,
@@ -14,11 +18,11 @@ const uploadItemSchema = new Schema({
         type: String,
         required: true,
     },
-    folder: {
-        type: Schema.Types.ObjectId,
-        ref: 'UploadItem',
+    size: {
+        type: String,
+        required: false,
     },
-    fileSize: {
+    extension:{
         type: String,
         required: false,
     },

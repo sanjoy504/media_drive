@@ -84,14 +84,15 @@ export async function fileUpload(req, res) {
 
             // Get file extension name
             const lastDotIndex = fileOriginalName.lastIndexOf('.');
-            const fileExtension = lastDotIndex !== -1 ? fileOriginalName.slice(lastDotIndex + 1) : 'text';
+            const fileExtension = lastDotIndex !== -1 ? fileOriginalName.slice(lastDotIndex + 1) : 'file';
 
             // Create document object for MongoDB
             const documentObject = {
                 user: _id,
                 name: fileOriginalName,
-                type: fileExtension,
-                fileSize
+                type: file.mimetype || fileExtension,
+                size: fileSize,
+                extension: fileExtension
             };
 
             if (folderId) {

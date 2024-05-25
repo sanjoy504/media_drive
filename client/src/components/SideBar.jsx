@@ -50,7 +50,7 @@ function SideBar() {
                     <Link
                         key={index + 1}
                         to={data.path}
-                        className={`py-2 px-2.5 ml-1 block transition duration-150 truncate text-sm ${pathname===data.path ? 'text-blue-600 bg-slate-50 border-l-2 border-blue-700' : 'text-slate-600'}`}
+                        className={`py-2 px-2.5 ml-1 block transition duration-150 truncate text-sm ${pathname===data.path ? 'text-blue-600 border-l-2 border-blue-700' : 'text-slate-600'}`}
                     >
                         <div className="flex items-center space-x-2">
                             {data.icon && <i className={data.icon + " text-xl"}></i>}

@@ -6,7 +6,7 @@ import Button from '@mui/material/Button';
 import AddFolderModel from './models/AddFolderModel';
 import UploadFileModel from './models/UploadFileModel';
 
-export default function UploadDropdownOption({ buttonText = "Add new", buttonIcon = "bi bi-plus", reValidatePath, folder = true }) {
+export default function UploadDropdownOption({ buttonText = "Add new", buttonIcon = "bi bi-plus", reValidatePath, folder = true, children }) {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -64,6 +64,7 @@ export default function UploadDropdownOption({ buttonText = "Add new", buttonIco
                         <span>New folder</span>
                     </button>
                     )}
+                    {children}
                 </div>
             </Popover>
 
