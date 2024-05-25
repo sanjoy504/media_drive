@@ -46,19 +46,19 @@ export async function getTotalSizesByTypes({ user, userTotalStorage }) {
             other: 0,
         };
 
-        // Find all documents with the specified types
-        const items = await UploadItem.find({ user, type: { $in: types } });
+        // Find all documents with the specified extensions
+        const items = await UploadItem.find({ user, extension: { $in: types } });
 
         // Accumulate the sizes for each type
         items.forEach(item => {
-            const bytes = convertSizeToBytes(item.fileSize || '0 Byte');
-            if (imageTypes.includes(item.type)) {
+            const bytes = convertSizeToBytes(item.size || '0 Byte');
+            if (imageTypes.includes(item.extension)) {
                 totalSizesInTypes.image += bytes;
-            } else if (videoTypes.includes(item.type)) {
+            } else if (videoTypes.includes(item.extension)) {
                 totalSizesInTypes.video += bytes
-            } else if (audioTypes.includes(item.type)) {
+            } else if (audioTypes.includes(item.extension)) {
                 totalSizesInTypes.audio += bytes
-            } else if (item.type === 'pdf') {
+            } else if (item.extension === 'pdf') {
                 totalSizesInTypes.pdf += bytes
             } else {
                 totalSizesInTypes.other += bytes;

@@ -127,7 +127,8 @@ export async function uploadSearchHandler(req, res) {
                 user: _id,
                 $or: [
                     { name: { $regex: searchRegExp } },
-                    { type: { $regex: searchRegExp } }
+                    { type: { $regex: searchRegExp } },
+                    { extension: { $regex: searchRegExp } }
                 ]
             }
         )

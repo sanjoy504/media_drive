@@ -13,7 +13,7 @@ export const decodeAuthToken = async (token) => {
 
 export const parseCookie = (cookieHeader) => {
     const cookies = {};
-    cookieHeader.split(';').forEach(cookie => {
+    cookieHeader?.split(';').forEach(cookie => {
         const parts = cookie.split('=');
         const name = parts.shift().trim();
         const value = decodeURIComponent(parts.join('='));
@@ -32,7 +32,7 @@ export function formatFileSize(bytes) {
 
 // Convert buffer to data URI
 export function bufferToDataUri(file) {
-    const base64 = file.buffer.toString('base64');
+    const base64 = file?.buffer.toString('base64');
     const mimeType = file.mimetype;
     return `data:${mimeType};base64,${base64}`;
 }
