@@ -46,7 +46,7 @@ function DropdownProfile({ align }) {
       const response = await axios.create({
         baseURL: environmentVariables.backendUrl,
         withCredentials: true
-      }).post('/logout')
+      }).post('/user/logout')
 
       if (response.status === 200) {
         //set user id null for render login component and prevent protect other route

@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  sideBarOpen: false
+  sideBarOpen: false,
+  isBackdropOpen: false,
 };
 
 export const webStateSlice = createSlice({

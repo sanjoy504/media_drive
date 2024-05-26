@@ -3,7 +3,7 @@ import express from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser";
 import connectToMongo from "./db/mongodb.js"
-import serverRoutes from "./routes/index.js"
+import userAllRoutes from "./routes/user.Route.js"
 import authenticateUser from "./middleware/authenticateUser.js"
 import { googleAuth } from "./auth/googleAuth.js"
 
@@ -49,7 +49,7 @@ connectToMongo()
 
 //Server endpoint
 app.get('/', function (_, res) {
-  res.json({ message: "Welcome to media cloud api server" })
+  res.json({ message: "Welcome to drive cloud api server" })
 });
 
 /********* Define All Routes ***********/
@@ -58,6 +58,6 @@ app.get('/', function (_, res) {
 app.post("/api/v1/login/google_login", googleAuth)
 
 // user related endpoints routes
-app.use('/api/v1/user', authenticateUser, serverRoutes);
+app.use('/api/v1/user', authenticateUser, userAllRoutes);
 
 

@@ -31,20 +31,30 @@ function SearchBar() {
   // Debounced search query
   const debouncedSearchQuery = useDebounce(searchQuery, 800);
 
+  // check page is search page or not
+  const isSearchPage = (pathname === "/search" || pathname === "/search/");
+
   useEffect(() => {
     if (debouncedSearchQuery !== "") {
-      if (pathname === "/search" || pathname === "/search/") {
+      if (isSearchPage) {
         setSearchParams({ q: debouncedSearchQuery }, { replace: true });
       } else {
         navigate(`/search?q=${debouncedSearchQuery}`);
       }
-    }else if (pathname === "/search" || pathname === "/search/" && initialSearchQuery !=='') {
-        navigate(-1);
+    } else if (isSearchPage && initialSearchQuery !== '') {
+      navigate(-1);
     };
   }, [debouncedSearchQuery]);
 
+  // clean search bar if user leave search page
+  useEffect(() => {
+    if (!isSearchPage) {
+      setSearchQuery('');
+    }
+  }, [isSearchPage])
+
   const handleSearch = (event) => {
-    const userSearchText = event.target.value?.replace(/ +/g, ' ').trimStart().trimEnd();
+    const userSearchText = event.target.value?.replace(/ +/g, ' ').trimStart();
     if (userSearchText !== ' ') {
       setSearchQuery(userSearchText);
     }

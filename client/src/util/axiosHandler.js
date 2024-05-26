@@ -1,7 +1,7 @@
 import axios from "axios";
 import { environmentVariables } from "../helper/helper";
 
-export const getClientUploadItems = async ({ folder = false, limit, skip, filter }) => {
+export const getClientFolderItems = async ({ folder = false, limit, skip, filter }) => {
     let status = 500;
     let data = [];
     let isDataEnd = false;

@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import { getUserData } from '../../context/User/getUserData';
+import { Helmet } from 'react-helmet-async';
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -29,49 +30,54 @@ export default function StoragePage() {
   const { pdf, image, video, audio } = storageUseInTypes || {};
 
   return (
-    <div className="px-2.5">
-      <div className="my-2">
+    <>
+      <Helmet>
+        <title>Media Drive | Storage details</title>
+      </Helmet>
+      <div className="px-2.5">
+        <div className="my-2">
 
-        <div className="w-full flex items-center justify-between">
-          <h2 className="text-xl small-screen:text-base text-balance text-gray-900 font-bold">Storage use details</h2>
-          <button type="button" className="bg-green-600 text-gray-50 text-center text-[11px] font-semibold p-2 shadow-md rounded-sm mx-3">
-            Upgrade storage
-          </button>
-        </div>
-
-        <div className="flex flex-col">
-          <small className="text-gray-700 font-medium">Total {totalUsedStorage.replace('Byte', 'KB')} use out of {storage_limit}</small>
-          <div className="flex items-center h-auto">
-            <div className="w-full mr-1">
-              <BorderLinearProgress variant="determinate" value={progress} />
-            </div>
-            <Box sx={{ minWidth: 35 }}>
-              <Typography variant="body2" color="text.secondary">{totalPercentageUsed || '0 %'}</Typography>
-            </Box>
+          <div className="w-full flex items-center justify-between">
+            <h2 className="text-xl small-screen:text-base text-balance text-gray-900 font-bold">Storage use details</h2>
+            <button type="button" className="bg-green-600 text-gray-50 text-center text-[11px] font-semibold p-2 shadow-md rounded-sm mx-3">
+              Upgrade storage
+            </button>
           </div>
+
+          <div className="flex flex-col">
+            <small className="text-gray-700 font-medium">Total {totalUsedStorage.replace('Byte', 'KB')} use out of {storage_limit}</small>
+            <div className="flex items-center h-auto">
+              <div className="w-full mr-1">
+                <BorderLinearProgress variant="determinate" value={progress} />
+              </div>
+              <Box sx={{ minWidth: 35 }}>
+                <Typography variant="body2" color="text.secondary">{totalPercentageUsed || '0 %'}</Typography>
+              </Box>
+            </div>
+          </div>
+
         </div>
 
+        <section className="w-full h-auto my-5">
+          <h5 className="text-base small-screen:text-sm text-balance text-gray-800 font-bold my-1.5">Files use details</h5>
+          <div className="text-4xl flex flex-row overflow-x-scroll gap-5 scrollbar-hidden">
+
+            { /**** Images Detaile **** */}
+            <FileDetailsCard title="Images" icon="image-fill" iconColor="text-blue-600" size={image?.size || "0 KB"} percentage={image?.percentageUse || "0%"} />
+
+            { /**** PDF files Detaile **** */}
+            <FileDetailsCard title="PDF files" icon="filetype-pdf" iconColor="text-red-600" size={pdf?.size || "0 KB"} percentage={pdf?.percentageUse || "0%"} />
+
+            { /**** Video files Detaile **** */}
+            <FileDetailsCard title="Video files" icon="filetype-mp4" iconColor="text-yellow-600" size={video?.size || "0 KB"} percentage={video?.percentageUse || "0%"} />
+
+            { /**** Audio files Detaile **** */}
+            <FileDetailsCard title="Audio files" icon="file-earmark-music" iconColor="text-purple-600" size={audio?.size || "0 KB"} percentage={audio?.percentageUse || "0%"} />
+
+          </div>
+        </section>
       </div>
-
-      <section className="w-full h-auto my-5">
-        <h5 className="text-base small-screen:text-sm text-balance text-gray-800 font-bold my-1.5">Files use details</h5>
-        <div className="text-4xl flex flex-row overflow-x-scroll gap-5 scrollbar-hidden">
-
-          { /**** Images Detaile **** */}
-          <FileDetailsCard title="Images" icon="image-fill" iconColor="text-blue-600" size={image?.size || "0 KB"} percentage={image?.percentageUse || "0%"} />
-
-          { /**** PDF files Detaile **** */}
-          <FileDetailsCard title="PDF files" icon="filetype-pdf" iconColor="text-red-600" size={pdf?.size || "0 KB"} percentage={pdf?.percentageUse || "0%"} />
-
-          { /**** Video files Detaile **** */}
-          <FileDetailsCard title="Video files" icon="filetype-mp4" iconColor="text-yellow-600" size={video?.size || "0 KB"} percentage={video?.percentageUse || "0%"} />
-
-          { /**** Audio files Detaile **** */}
-          <FileDetailsCard title="Audio files" icon="file-earmark-music" iconColor="text-purple-600" size={audio?.size || "0 KB"} percentage={audio?.percentageUse || "0%"} />
-
-        </div>
-      </section>
-    </div>
+    </>
   )
 };
 

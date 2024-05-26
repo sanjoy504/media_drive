@@ -75,7 +75,7 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
 
                 if (pathname === '/') {
 
-                    navigate('/uploads');
+                    navigate('/drive/folders');
                 } else {
                     reValidatePath();
                 }

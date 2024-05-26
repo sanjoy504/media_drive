@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import { styled } from '@mui/material';
 import { environmentVariables } from '../../helper/helper';
+import { validateUploadFilesTypes } from '../../util/utils';
 
 
 const VisuallyHiddenInput = styled('input')({
@@ -74,7 +75,7 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
 
                 if (pathname === '/') {
 
-                    navigate('/uploads');
+                    navigate('/drive/recent-files');
                 } else {
                     reValidatePath();
                 }
@@ -200,10 +201,10 @@ function InputFileUpload({ setErrorMessage }) {
             <div className="flex flex-row items-center overflow-x-auto">
                 {filePreviews.map((preview, index) => (
                     <div key={index} className="relative flex-shrink-0 w-auto mr-4">
-                        {preview.type.startsWith('image/') && (
+                        {validateUploadFilesTypes(preview.type) === "image" && (
                             <img className="max-w-full h-40 border border-slate-200 rounded-sm" src={preview.url} alt={`Preview ${index}`} />
                         )}
-                        {preview.type === 'application/pdf' && (
+                        {validateUploadFilesTypes(preview.type) === 'pdf' && (
                             <embed className="max-h-52" src={preview.url} type="application/pdf" width="100%" height="500px" />
                         )}
 
@@ -232,7 +233,7 @@ function InputFileUpload({ setErrorMessage }) {
                     name="files"
                     id="files"
                     onChange={handleFileChange}
-                    accept="image/jpeg, image/png, image/gif, image/bmp, image/webp, application/pdf"
+                    accept="image/*, application/pdf"
                     required
                     multiple
                 />

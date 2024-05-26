@@ -35,7 +35,7 @@ export default function UploadDropdownOption({ buttonText = "Add new", buttonIco
                 <span className="capitalize text-sm">{buttonText}</span>
             </Button>
             <Popover
-                className="my-2"
+                className="my-2 font-normal text-gray-700"
                 id={id}
                 open={open}
                 anchorEl={anchorEl}
@@ -51,7 +51,7 @@ export default function UploadDropdownOption({ buttonText = "Add new", buttonIco
                     <button
                         onClick={() => setOpenFileModel(true)}
                         type="button"
-                        className="flex gap-2 text-gray-600 text-base">
+                        className="flex gap-2 text-base">
                         <i className="bi bi-file-plus"></i>
                         <span>Add file</span>
                     </button>
@@ -59,11 +59,12 @@ export default function UploadDropdownOption({ buttonText = "Add new", buttonIco
                     <input ref={fileRef} type="file" name="file" className="hidden" />
 
                     {folder && (
-                    <button onClick={() => setOpenFolderModel(true)} type="button" className="flex gap-2 text-gray-600 text-base">
+                    <button onClick={() => setOpenFolderModel(true)} type="button" className="flex gap-2 text-base">
                         <i className="bi bi-folder-plus"></i>
                         <span>New folder</span>
                     </button>
                     )}
+         
                     {children}
                 </div>
             </Popover>

@@ -32,8 +32,8 @@ export async function validateUser(req, res){
 
 };
 
-//Get user upload items
-export async function getUploadItems(req, res) {
+// Get user upload items
+export async function getFolderItems(req, res) {
     try {
 
         const user = req.user;
@@ -42,7 +42,7 @@ export async function getUploadItems(req, res) {
 
         const { folder, limit, skip } = req.body;
 
-        const query = { user: _id };
+         const query = { user: _id };
 
         if (folder) {
 
@@ -51,8 +51,45 @@ export async function getUploadItems(req, res) {
             }
             query.folder = folder;
         } else {
-            query.folder = { $exists: false }
+            query.folder = { $exists: false };
+            query.type = 'folder';
         }
+
+        const [uploadItems, folderDetails] = await Promise.all([
+            UploadItem.find(query)
+                .sort({ creatAt: -1 })
+                .skip(skip)
+                .limit(limit || 20)
+                .select(uploadItemsSelectFields),
+            folder && UploadItem.findById(folder).select('name')
+        ]);
+
+        if (folder && !folderDetails) {
+            return res.status(400).json({ message: 'No folder found' });
+        }
+
+        const endOfData = (uploadItems.length < limit - 1);
+
+        return res.status(200).json({ uploadItems, endOfData, folderDetails });
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}; 
+
+
+// Get user upload items
+export async function getUploadItems(req, res) {
+    try {
+
+        const user = req.user;
+
+        const { _id } = user || {};
+
+        const { limit, skip } = req.body;
+
+        const query = { user: _id, type: {$nin: 'folder'}  };
 
         const [uploadItems, folderDetails] = await Promise.all([
             UploadItem.find(query)

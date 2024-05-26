@@ -1,7 +1,7 @@
 import { Fragment, useCallback, memo, useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Checkbox, CircularProgress, Switch } from "@mui/material";
-import { validateUploadFilesTypes } from "../util/utils";
+import { backdropProgress, validateUploadFilesTypes } from "../util/utils";
 import { deleteFileFromServer } from "../util/axiosHandler";
 import FileViewerModel from "./models/FileViewerModel";
 import usePreventContextMenu from "../hooks/contextMenuEvent";
@@ -30,6 +30,8 @@ export default function UploadItemsGridSection({
 
     const deleteOptionContainerRef = useRef();
 
+    const setBackdrop = backdropProgress();
+
     // Switch option handler
     const handleSwitch = (e) => {
         const element = document.querySelectorAll("#select-file-checkbox");
@@ -49,7 +51,10 @@ export default function UploadItemsGridSection({
         if (id === "all") {
             const element = document.querySelectorAll("#select-file-checkbox");
             if (selectedFileIds.length !== uploadItems.length) {
-                setSelectedFileIds(uploadItems.map((item) => item._id));
+                // prevent folder select
+                const filteredFiles = uploadItems.filter((data) => validateUploadFilesTypes(data.type) !== "folder");
+                // set all files id to state
+                setSelectedFileIds(filteredFiles.map((item) => item._id));
                 element.forEach((checkbox) => checkbox.checked = true);
             } else {
                 setSelectedFileIds([]);
@@ -70,14 +75,16 @@ export default function UploadItemsGridSection({
     // Delete files handler
     const handleDeleteFile = async () => {
         if (selectedFileIds.length > 0) {
+            setBackdrop(true);
             const { status } = await deleteFileFromServer(selectedFileIds);
             if (status === 200) {
                 reValidatePage({
                     type: 'deleteFile',
-                    data: selectedFileIds
+                    files: selectedFileIds
                 });
                 setSelectedFileIds([]);
             }
+            setBackdrop(false);
         }
     };
 
@@ -147,7 +154,7 @@ export default function UploadItemsGridSection({
                                     <FolderCard id={data._id} name={data.name} />
                                 </div>
                             )}
-                            {validateUploadFilesTypes(data.extension) === "image" && (
+                            {validateUploadFilesTypes(data.type) === "image" && (
                                 <div className="relative">
                                     <ImageCard
                                         id={data._id}
@@ -156,11 +163,11 @@ export default function UploadItemsGridSection({
                                         functions={functions}
                                     />
                                     <div className="absolute right-0 top-0 z-10">
-                                        <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden" aria-label="select file" />
+                                        <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden cursor-pointer" aria-label="select file" />
                                     </div>
                                 </div>
                             )}
-                            {validateUploadFilesTypes(data.extension) === "pdf" && (
+                            {validateUploadFilesTypes(data.type) === "pdf" && (
                                 <div className="relative">
                                     <PdfCard
                                         id={data._id}
@@ -169,7 +176,7 @@ export default function UploadItemsGridSection({
                                         functions={functions}
                                     />
                                     <div className="absolute right-0 top-0 z-10">
-                                        <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden" aria-label="select file" />
+                                        <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden cursor-pointer" aria-label="select file" />
                                     </div>
                                 </div>
                             )}
@@ -202,7 +209,7 @@ const FolderCard = memo(({ id, name }) => {
     const navigate = useNavigate();
 
     const openFolder = () => {
-        navigate(`/uploads/${id}`);
+        navigate(`/drive/folders/${id}`);
     };
 
     const folderCardRef = usePreventContextMenu(openFolder);
@@ -227,10 +234,10 @@ const ImageCard = memo(({ id, src, alt, functions }) => {
     const imageCardRef = usePreventContextMenu(fileViewSetup);
 
     return (
-        <div className="w-full max-w-42 h-28 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center cursor-pointer overflow-hidden">
+        <div className="w-full max-w-42 h-28 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden">
             <div ref={imageCardRef} onClick={fileViewSetup}>
                 <LazyLoadingImage
-                    className="w-full max-w-16 h-auto max-h-12 rounded-sm"
+                    className="w-full max-w-16 h-auto max-h-12 rounded-sm cursor-pointer"
                     actualSrc={src}
                     alt={alt}
                 />
@@ -254,8 +261,8 @@ const PdfCard = memo(({ id, name, pdfLink, functions }) => {
     const pdfCardRef = usePreventContextMenu(fileViewSetup);
 
     return (
-        <div className="bg-slate-50 p-1.5 w-full max-w-42 h-28 rounded-md shadow-sm flex flex-col justify-center items-center cursor-pointer relative">
-            <i ref={pdfCardRef} onClick={fileViewSetup} className="bi bi-file-earmark-pdf-fill text-red-600 text-5xl"></i>
+        <div className="bg-slate-50 p-1.5 w-full max-w-42 h-28 rounded-md shadow-sm flex flex-col justify-center items-center relative">
+            <i ref={pdfCardRef} onClick={fileViewSetup} className="bi bi-file-earmark-pdf-fill text-red-600 text-5xl cursor-pointer"></i>
             <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full mt-1.5">
                 {name}
             </p>

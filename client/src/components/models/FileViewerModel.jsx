@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Backdrop, CircularProgress, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import { deleteFileFromServer } from "../../util/axiosHandler";
-import { downloadImageAndPdf } from "../../util/utils";
+import { backdropProgress, downloadImageAndPdf } from "../../util/utils";
 
 function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValidatePage }) {
+
     const [zoom, setZoom] = useState(100);
-    const [openBackdrop, setOpenBackdrop] = useState(false);
+
+    const setBackdrop = backdropProgress();
 
     const handleBackgroundClick = () => {
         if (fileId) {
@@ -37,16 +39,16 @@ function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValida
     };
 
     const handleDeleteFile = async () => {
-        setOpenBackdrop(true);
+       setBackdrop(true);
         const { status } = await deleteFileFromServer([fileId]);
         if (status === 200) {
             reValidatePage({
                 type: "deleteFile",
-                data: [fileId],
+                files: [fileId],
             });
-            handleBackgroundClick();
         }
-        setOpenBackdrop(false);
+        handleBackgroundClick();
+        setBackdrop(false);
     };
 
     if (!src || !type || !fileId) {
@@ -131,13 +133,6 @@ function FileViewerModel({ fileId, title, src, type, handleSetFileView, reValida
                     </Tooltip>
                 </div>
             </div>
-
-            <Backdrop
-                sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={openBackdrop}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
         </>
     );
 }

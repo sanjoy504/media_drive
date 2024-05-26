@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom"
 
-function DriveLayout() {
+function FoldersLayout() {
 
     return (<Outlet />)
 };
 
-export default DriveLayout;
+export default FoldersLayout;

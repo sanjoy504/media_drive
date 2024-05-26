@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getRecentUploadsFiles } from "../../util/axiosHandler"
 import { useInfiniteScroll } from "../../lib/lib";
 import UploadItemsGridSection from "../../components/UploadItemsGridSection"
+import { Helmet } from "react-helmet-async";
 
 function RecentUploadsFiles() {
 
@@ -15,11 +16,20 @@ function RecentUploadsFiles() {
 
     const bottomObserverElement = useInfiniteScroll(loadMore, loading, isAllDataLoad);;
 
-    const reValidatePage = () => {
-        setPage(1);
-        setIsAllDataLoad(false);
-        setUploadItems([]);
-    }
+    const reValidatePage = (arg) => {
+        
+        // check if validate page for delete so dont call backend just update upload items state
+        if (arg && arg.type === 'deleteFile') {
+             // Filter out the deleted items
+             const updatedUploadItems = uploadItems.filter(item => !arg.files?.includes(item._id));
+             // Update the state with the new list of items
+             setUploadItems(updatedUploadItems);
+        }else{
+            setPage(1);
+            setIsAllDataLoad(false);
+            setUploadItems([]);
+        }
+    };
 
     useEffect(() => {
         (async () => {
@@ -56,6 +66,9 @@ function RecentUploadsFiles() {
 
     return (
         <>
+        <Helmet>
+            <title>Media Drive | Recent Files</title>
+        </Helmet>
             <UploadItemsGridSection
                 title="Recent files"
                 pageLoading={page === 1 && loading ? true : false}

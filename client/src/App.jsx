@@ -10,6 +10,8 @@ import LoginPage from "./pages/login/LoginPage"
 import Header from "./components/Header"
 import SideBar from "./components/SideBar"
 import RouteLayout from "./pages/RouteLayout"
+import { Helmet } from "react-helmet-async"
+import Backdrops from "./components/Backdrops"
 
 function App() {
 
@@ -87,8 +89,14 @@ function App() {
     )
     //If server not return user so return Login page
   } else if (!userId) {
-    return (<LoginPage />);
-  };
+    return (
+    <>
+    <Helmet>
+      <title>Media Drive| Login & Signup</title>
+    </Helmet>
+    <LoginPage />
+    </>
+    )};
 
   return (
     <>
@@ -98,6 +106,7 @@ function App() {
           <Header />
           <main className="py-2">
             <RouteLayout />
+            <Backdrops />
           </main>
         </div>
       </div>

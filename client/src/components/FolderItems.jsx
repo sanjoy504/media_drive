@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getClientUploadItems } from "../util/axiosHandler"
+import { getClientFolderItems } from "../util/axiosHandler"
 import { useInfiniteScroll } from "../lib/lib";
 import NotfoundMessages from "./messages/NotfoundMessages";
 import UploadItemsGridSection from "./UploadItemsGridSection";
-
 
 function FolderItems() {
 
@@ -23,10 +22,11 @@ function FolderItems() {
     const bottomObserverElement = useInfiniteScroll(loadMore, loading, isAllDataLoad);
 
     const reValidatePage = (arg) => {
-
+        
+        // check if validate page for delete so dont call backend just update upload items state
         if (arg && arg.type === 'deleteFile') {
              // Filter out the deleted items
-             const updatedUploadItems = uploadItems.filter(item => !arg.data?.includes(item._id));
+             const updatedUploadItems = uploadItems.filter(item => !arg.files?.includes(item._id));
              // Update the state with the new list of items
              setUploadItems(updatedUploadItems);
         }else{
@@ -34,8 +34,7 @@ function FolderItems() {
             setIsAllDataLoad(false);
             setUploadItems([]);
         }
-        
-    }
+    };
 
     useEffect(() => {
         (async () => {
@@ -44,7 +43,7 @@ function FolderItems() {
 
                 setLoading(true);
 
-                const { status, data, isDataEnd, folderInfo, message } = await getClientUploadItems({
+                const { status, data, isDataEnd, folderInfo, message } = await getClientFolderItems({
                     folder: folderId,
                     limit: 30,
                     skip: uploadItems.length

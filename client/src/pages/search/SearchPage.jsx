@@ -6,6 +6,7 @@ import { environmentVariables } from "../../helper/helper";
 import { useInfiniteScroll } from "../../lib/lib";
 import NotfoundMessages from "../../components/messages/NotfoundMessages";
 import UploadItemsGridSection from "../../components/UploadItemsGridSection";
+import { Helmet } from "react-helmet-async";
 
 function SearchPage() {
 
@@ -72,7 +73,11 @@ function SearchPage() {
 
   return (
     <>
-
+<Helmet>
+  <title>
+    Media Drive | Search
+  </title>
+</Helmet>
       {loading && searchData.length === 0 && (
         <div className="w-full h-full flex justify-center items-center my-5">
           <CircularProgress />
