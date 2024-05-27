@@ -6,7 +6,14 @@ import Button from '@mui/material/Button';
 import AddFolderModel from './models/AddFolderModel';
 import UploadFileModel from './models/UploadFileModel';
 
-export default function UploadDropdownOption({ buttonText = "Add new", buttonIcon = "bi bi-plus", reValidatePath, folder = true, children }) {
+export default function UploadDropdownOption({ 
+    buttonText = "Add new", 
+    buttonIcon = "bi bi-plus", 
+    reValidatePath, 
+    folderUpload = true, 
+    fileUpload = true, 
+    children 
+}) {
 
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -48,23 +55,24 @@ export default function UploadDropdownOption({ buttonText = "Add new", buttonIco
 
                 <div className="px-4 py-2 flex flex-col space-y-2">
 
-                    <button
+                    {fileUpload && (<button
                         onClick={() => setOpenFileModel(true)}
                         type="button"
                         className="flex gap-2 text-base">
                         <i className="bi bi-file-plus"></i>
                         <span>Add file</span>
                     </button>
+                    )}
 
                     <input ref={fileRef} type="file" name="file" className="hidden" />
 
-                    {folder && (
-                    <button onClick={() => setOpenFolderModel(true)} type="button" className="flex gap-2 text-base">
-                        <i className="bi bi-folder-plus"></i>
-                        <span>New folder</span>
-                    </button>
+                    {folderUpload && (
+                        <button onClick={() => setOpenFolderModel(true)} type="button" className="flex gap-2 text-base">
+                            <i className="bi bi-folder-plus"></i>
+                            <span>New folder</span>
+                        </button>
                     )}
-         
+
                     {children}
                 </div>
             </Popover>

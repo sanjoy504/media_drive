@@ -23,7 +23,7 @@ export const getClientFolderItems = async ({ folder = false, limit, skip, filter
         }
 
         const api = axios.create({
-            baseURL: environmentVariables.backendUrl,
+            baseURL: environmentVariables.backendUrls.render,
             withCredentials: true
         })
         const response = await api.post('/user/get_uploads', payload);
@@ -65,7 +65,7 @@ export const getRecentUploadsFiles = async ({ limit, skip, filter }) => {
         }
 
         const api = axios.create({
-            baseURL: environmentVariables.backendUrl,
+            baseURL: environmentVariables.backendUrls.vercel,
             withCredentials: true
         })
 
@@ -95,7 +95,7 @@ export const deleteFileFromServer = async (fileIds) => {
 
     try {
         const api = axios.create({
-            baseURL: environmentVariables.backendUrl,
+            baseURL: environmentVariables.backendUrls.vercel,
             withCredentials: true
         })
 

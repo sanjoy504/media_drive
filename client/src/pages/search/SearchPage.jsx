@@ -46,7 +46,7 @@ function SearchPage() {
       try {
         setLoading(true);
         const api = axios.create({
-          baseURL: environmentVariables.backendUrl,
+          baseURL: environmentVariables.backendUrls.vercel,
           withCredentials: true,
         });
 

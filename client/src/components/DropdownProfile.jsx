@@ -44,7 +44,7 @@ function DropdownProfile({ align }) {
 
     try {
       const response = await axios.create({
-        baseURL: environmentVariables.backendUrl,
+        baseURL: environmentVariables.backendUrls.vercel,
         withCredentials: true
       }).post('/user/logout')
 

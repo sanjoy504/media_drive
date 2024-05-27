@@ -35,5 +35,20 @@ export function bufferToDataUri(file) {
     const base64 = file?.buffer.toString('base64');
     const mimeType = file.mimetype;
     return `data:${mimeType};base64,${base64}`;
+};
+
+// This function converts a size string back to bytes
+export function convertSizeToBytes(size) {
+    const units = {
+        Byte: 1,
+        KB: 1024,
+        MB: 1024 ** 2,
+        GB: 1024 ** 3,
+        TB: 1024 ** 4
+    };
+
+    const [value, unit] = size.split(' ');
+    return parseFloat(value) * (units[unit] || 1);
 }
+
 

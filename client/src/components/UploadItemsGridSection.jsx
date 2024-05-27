@@ -15,8 +15,9 @@ export default function UploadItemsGridSection({
     loading,
     uploadItems = [],
     reValidatePage,
-    creatFolder = false,
-    uploadOption = true
+    uploadOption = true,
+    creatFile=true,
+    creatFolder=true,
 }) {
 
     const [fileView, setFileView] = useState({
@@ -34,6 +35,7 @@ export default function UploadItemsGridSection({
 
     // Switch option handler
     const handleSwitch = (e) => {
+
         const element = document.querySelectorAll("#select-file-checkbox");
         element.forEach((checkbox) => checkbox.style.display = e.target.checked ? "block" : "none");
         deleteOptionContainerRef.current.style.display = e.target.checked ? "block" : "none"
@@ -103,7 +105,7 @@ export default function UploadItemsGridSection({
                 <div className="w-full h-auto flex justify-between items-center">
                     <div>
                         <h3 className="text-gray-900 text-baze small-screen:text-xs font-bold line-clamp-2">{title}</h3>
-                        {uploadItems.length > 0 && (
+                        {uploadItems.length > 0 && creatFile && (
                             <>
                                 <label htmlFor="edit-file-mode-switch" className="text-xs">Option mode</label>
                                 <Switch id="edit-file-mode-switch" onChange={handleSwitch} size="small" />
@@ -112,7 +114,7 @@ export default function UploadItemsGridSection({
                     </div>
 
                     {uploadOption && (
-                        <UploadDropdownOption folder={creatFolder} reValidatePath={reValidatePage} />
+                        <UploadDropdownOption folderUpload={creatFolder} fileUpload={creatFile} reValidatePath={reValidatePage} />
                     )}
                 </div>
 

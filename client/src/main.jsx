@@ -10,6 +10,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { reduxStore } from "./context/store.js"
 import { environmentVariables } from './helper/helper.js';
 import App from './App.jsx'
+import Backdrops from './components/Backdrops.jsx';
 
 createRoot(document.getElementById('media-drive')).render(
   //<StrictMode>
@@ -18,6 +19,7 @@ createRoot(document.getElementById('media-drive')).render(
         <Router>
           <HelmetProvider>
           <App /> {/** Main app component ***/}
+          <Backdrops />
           </HelmetProvider>
         </Router>
       </GoogleOAuthProvider>

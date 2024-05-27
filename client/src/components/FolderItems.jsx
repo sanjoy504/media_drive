@@ -95,7 +95,7 @@ function FolderItems() {
                     loading={loading}
                     uploadItems={uploadItems}
                     reValidatePage={reValidatePage}
-                    creatFolder={true}
+                    creatFile={folderId ? true : false}
                 />
 
             <div ref={bottomObserverElement}></div>

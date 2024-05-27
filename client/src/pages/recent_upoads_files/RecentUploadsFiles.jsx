@@ -74,6 +74,7 @@ function RecentUploadsFiles() {
                 pageLoading={page === 1 && loading ? true : false}
                 loading={loading}
                 uploadItems={uploadItems}
+                creatFolder={false}
                 reValidatePage={reValidatePage}
             />
 

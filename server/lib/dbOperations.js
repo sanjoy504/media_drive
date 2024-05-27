@@ -1,20 +1,6 @@
 import { audioTypes, imageTypes, videoTypes } from "../constant/constant.js";
 import UploadItem from "../models/uploadItems.model.js";
-import { formatFileSize } from "../util/utils.js";
-
-// This function converts a size string back to bytes
-function convertSizeToBytes(size) {
-    const units = {
-        Byte: 1,
-        KB: 1024,
-        MB: 1024 ** 2,
-        GB: 1024 ** 3,
-        TB: 1024 ** 4
-    };
-
-    const [value, unit] = size.split(' ');
-    return parseFloat(value) * (units[unit] || 1);
-}
+import { convertSizeToBytes, formatFileSize } from "../util/utils.js";
 
 function formatPercentage(value) {
     if (value === 0) {

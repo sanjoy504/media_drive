@@ -60,7 +60,7 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
             setErrorMessage(null);
 
             const api = axios.create({
-                baseURL: environmentVariables.backendUrl,
+                baseURL: environmentVariables.backendUrls.render,
                 withCredentials: true
             });
 
@@ -93,50 +93,46 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
         }
 
     };
-  
-    
+
+
     return (
         <Dialog
-
             open={isOpen}
-            onClose={handleClose}
+            onClose={!progress && handleClose}
+            hideBackdrop={false}
             PaperProps={{
                 component: 'form',
                 onSubmit: handleSubmit,
             }}
         >
-            <DialogTitle>
-                Upload file
-                {errorMessage && (
-                    <p className="text-xs text-red-700">{errorMessage}</p>
-                )}
-            </DialogTitle>
+            {!progress ? (
+                <>
+                    <DialogTitle>
+                        Upload file
+                        {errorMessage && (
+                            <p className="text-xs text-red-700">{errorMessage}</p>
+                        )}
+                    </DialogTitle>
 
-            <DialogContent>
-
-                {progress ? (
-                    <Box sx={{ width: '100%', minWidth: '220px' }}>
-                        <div className="flex justify-center my-2 ">
-                            <small>Uploading...</small>
-                        </div>
-                        <LinearProgress />
-                    </Box>
-                ) : (
-                    <>
+                    <DialogContent>
                         <DialogContentText className="max-w-80">
                             <small className="text-xs">Accept only Image and PDF files and size under 15MB and one time 10 files</small>
                         </DialogContentText>
-
                         <InputFileUpload setErrorMessage={setErrorMessage} />
-                    </>
-                )}
+                    </DialogContent>
 
-            </DialogContent>
-            {!progress && (
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button type="submit">Upoad</Button>
-                </DialogActions>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button type="submit">Upoad</Button>
+                    </DialogActions>
+                </>
+            ) : (
+                <Box sx={{ width: '100%', minWidth: '280px', paddingBottom: '25px', paddingX: '10px' }}>
+                    <div className="flex justify-center my-3 font-medium">
+                        <small>Uploading...</small>
+                    </div>
+                    <LinearProgress />
+                </Box>
             )}
         </Dialog>
     );
