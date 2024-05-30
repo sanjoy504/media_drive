@@ -18,11 +18,20 @@ function SearchPage() {
   const [page, setPage] = useState(1);
   const [isAllDataLoad, setIsAllDataLoad] = useState(false);
 
-  const reValidatePage = () => {
-    setPage(1);
-    setIsAllDataLoad(false);
-    setUploadItems([]);
-}
+const reValidatePage = (arg) => {
+        
+  // check if validate page for delete so dont call backend just update upload items state
+  if (arg && arg.type === 'deleteFile') {
+       // Filter out the deleted items
+       const updatedUploadItems = searchData.filter(item => !arg.files?.includes(item._id));
+       // Update the state with the new list of items
+       setSearchData(updatedUploadItems);
+  }else{
+      setPage(1);
+      setIsAllDataLoad(false);
+      setSearchData([]);
+  }
+};
 
 
   useEffect(() => {

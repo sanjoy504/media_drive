@@ -76,16 +76,21 @@ export default function UploadItemsGridSection({
 
     // Delete files handler
     const handleDeleteFile = async () => {
-        if (selectedFileIds.length > 0) {
-            setBackdrop(true);
-            const { status } = await deleteFileFromServer(selectedFileIds);
-            if (status === 200) {
-                reValidatePage({
-                    type: 'deleteFile',
-                    files: selectedFileIds
-                });
-                setSelectedFileIds([]);
+        try {
+            if (selectedFileIds.length > 0) {
+                setBackdrop(true);
+                const { status } = await deleteFileFromServer(selectedFileIds);
+                if (status === 200) {
+                    reValidatePage({
+                        type: 'deleteFile',
+                        files: selectedFileIds
+                    });
+                    setSelectedFileIds([]);
+                }
             }
+        } catch (error) {
+           console.log(error) 
+        }finally{
             setBackdrop(false);
         }
     };
