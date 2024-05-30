@@ -6,7 +6,7 @@ function UploadFoldersItems() {
     return (
         <>
             <Helmet>
-                <title>Media Cloud | Folder items</title>
+                <title>Media Drive | Folder items</title>
             </Helmet>
             <FolderItems />
         </>

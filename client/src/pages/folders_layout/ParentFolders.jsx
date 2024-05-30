@@ -6,7 +6,7 @@ function ParentFolders() {
     return (
         <>
             <Helmet>
-                <title>Media Cloud | My Folders</title>
+                <title>Media Drive | My Folders</title>
             </Helmet>
             <FolderItems />
         </>
