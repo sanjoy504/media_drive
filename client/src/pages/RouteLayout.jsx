@@ -7,10 +7,8 @@ const LoginPage = lazy(() => import("./login/LoginPage"));
 //Home page component
 const Home = lazy(() => import("./home/Home"));
 
-/**** Folders Route All Layout Component *****/
+/**** Folders Layout/Folders items Page Component *****/
 const FoldersLayout = lazy(() => import("./folders_layout/FoldersLayout"));
-const ParentFolders = lazy(() => import("./folders_layout/ParentFolders"));
-const UploadFoldersItems = lazy(() => import("./folders_layout/UploadFoldersItems"));
 
 //Recent uploads files route
 const RecentUploadsFiles = lazy(() => import("./recent_upoads_files/RecentUploadsFiles"));
@@ -27,10 +25,8 @@ function RouteLayout() {
             <Routes>
                 <Route exact path="/" element={<Home />} />
 
-                <Route exact path="/drive/folders" element={<FoldersLayout />} >
-                    <Route index element={<ParentFolders />} />
-                    <Route exact path="/drive/folders/:folderId" element={<UploadFoldersItems />} />
-                </Route>
+                <Route exact path="/drive/folders/:folderId" element={<FoldersLayout />} />
+    
                 <Route exact path="/drive/recent-files" element={<RecentUploadsFiles />} />
                 <Route exact path="/storage" element={<StoragePage />} />
 

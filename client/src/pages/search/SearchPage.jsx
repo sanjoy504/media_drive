@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import CircularProgress from '@mui/material/CircularProgress';
 import { environmentVariables } from "../../helper/helper";
 import { useInfiniteScroll } from "../../lib/lib";
-import NotfoundMessages from "../../components/messages/NotfoundMessages";
 import UploadItemsGridSection from "../../components/UploadItemsGridSection";
-import { Helmet } from "react-helmet-async";
+import NotfoundMessage from "../../components/NotFoundMessage";
 
 function SearchPage() {
 
@@ -105,7 +105,7 @@ const reValidatePage = (arg) => {
       )}
 
       {!loading && searchQuery !== "" && searchData.length === 0 && (
-       <NotfoundMessages message="Not upload items found for this search" />
+       <NotfoundMessage message="Not upload items found for this search" />
       )}
 
       <div ref={observerElement}></div>

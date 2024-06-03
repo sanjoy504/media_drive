@@ -11,7 +11,7 @@ function SideBar() {
 
     const navLinks = [{
         name: "My folders",
-        path: "/drive/folders",
+        path: "/drive/folders/indexfolders",
         icon: "bi bi-folder-fill"
     },
     {

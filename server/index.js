@@ -48,8 +48,8 @@ connectToMongo()
 
 
 //Server endpoint
-app.get('/', function (_, res) {
-  res.json({ message: "Welcome to drive cloud api server" })
+app.get('/api/v1', function (_, res) {
+  res.send("ok")
 });
 
 /********* Define All Routes ***********/

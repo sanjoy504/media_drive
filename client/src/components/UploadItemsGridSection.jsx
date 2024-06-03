@@ -6,8 +6,8 @@ import { deleteFileFromServer } from "../util/axiosHandler";
 import FileViewerModel from "./models/FileViewerModel";
 import usePreventContextMenu from "../hooks/contextMenuEvent";
 import LazyLoadingImage from "../lib/LazyLoadingImage";
-import UploadDropdownOption from "./UploadDropdownOption";
-import NotfoundMessages from "./messages/NotfoundMessages";
+import UploadDropdownOption from "./UploadDropdownOption"
+import NotfoundMessage from "./NotFoundMessage";
 
 export default function UploadItemsGridSection({
     title = "My Uploads",
@@ -153,7 +153,7 @@ export default function UploadItemsGridSection({
             </div>
 
             {uploadItems.length > 0 ? (
-                <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 my-2.5 px-2.5">
+                <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 my-2.5 px-2.5">
                     {uploadItems.map((data) => (
                         <Fragment key={data._id}>
                             {validateUploadFilesTypes(data.type) === "folder" && (
@@ -191,7 +191,7 @@ export default function UploadItemsGridSection({
                     ))}
                 </div>
             ) : (
-                <NotfoundMessages message="You not upload anything" />
+                <NotfoundMessage message="You not upload anything" />
             )}
             {loading && uploadItems?.length > 0 && (
                 <div className="w-full h-auto flex justify-center items-center my-6">
@@ -241,10 +241,10 @@ const ImageCard = memo(({ id, src, alt, functions }) => {
     const imageCardRef = usePreventContextMenu(fileViewSetup);
 
     return (
-        <div className="w-full max-w-42 h-28 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden">
+        <div className="w-full h-auto bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden px-1.5 py-2">
             <div ref={imageCardRef} onClick={fileViewSetup}>
                 <LazyLoadingImage
-                    className="w-full max-w-16 h-auto max-h-12 rounded-sm cursor-pointer"
+                    className="w-full h-full max-h-32 rounded-sm cursor-pointer"
                     actualSrc={src}
                     alt={alt}
                 />

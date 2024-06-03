@@ -11,7 +11,6 @@ import Header from "./components/Header"
 import SideBar from "./components/SideBar"
 import RouteLayout from "./pages/RouteLayout"
 import { Helmet } from "react-helmet-async"
-import Backdrops from "./components/Backdrops"
 
 function App() {
 
@@ -43,7 +42,8 @@ function App() {
           const { userDetails, storageDetails } = responseData;
 
           const { _id, email, name, avatar, storage_limit } = userDetails || {};
-
+          
+          // set user details after user validation success
           dispatch(updateUserDataState({
             userId: _id,
             name,
@@ -52,6 +52,8 @@ function App() {
             storage_limit,
             storageDetails
           }));
+          // just active render deploy backend server becuase render make server sleeping mode if server is not runing long time
+          axios.get(environmentVariables.backendUrls.render);
         }
       } catch (error) {
         console.log(error)

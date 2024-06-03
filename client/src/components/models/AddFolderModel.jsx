@@ -144,7 +144,7 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
             {!progress && (
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button type="submit">Add</Button>
+                    <Button type="submit">Creat</Button>
                 </DialogActions>
             )}
         </Dialog>

@@ -23,7 +23,7 @@ export const getClientFolderItems = async ({ folder = false, limit, skip, filter
         }
 
         const api = axios.create({
-            baseURL: environmentVariables.backendUrls.render,
+            baseURL: environmentVariables.backendUrls.vercel,
             withCredentials: true
         })
         const response = await api.post('/user/get_uploads', payload);
