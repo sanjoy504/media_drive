@@ -6,7 +6,7 @@ import { deleteFileFromServer } from "../util/axiosHandler";
 import FileViewerModel from "./models/FileViewerModel";
 import usePreventContextMenu from "../hooks/contextMenuEvent";
 import LazyLoadingImage from "../lib/LazyLoadingImage";
-import UploadDropdownOption from "./UploadDropdownOption"
+import UploadDropdownOption from "./UploadDropdownOption";
 import NotfoundMessage from "./NotFoundMessage";
 
 export default function UploadItemsGridSection({
@@ -16,8 +16,8 @@ export default function UploadItemsGridSection({
     uploadItems = [],
     reValidatePage,
     uploadOption = true,
-    creatFile=true,
-    creatFolder=true,
+    creatFile = true,
+    creatFolder = true,
 }) {
 
     const [fileView, setFileView] = useState({
@@ -32,6 +32,7 @@ export default function UploadItemsGridSection({
     const deleteOptionContainerRef = useRef();
 
     const setBackdrop = backdropProgress();
+
 
     // Switch option handler
     const handleSwitch = (e) => {
@@ -48,24 +49,30 @@ export default function UploadItemsGridSection({
         };
     };
 
+    const updateCheckedAssetsIds = () => {
+        const element = document.querySelectorAll("#select-file-checkbox");
+        const checkedElementIds = [];
+        element.forEach((checkbox) => {
+            if (checkbox.checked) {
+                checkedElementIds.push(checkbox.getAttribute("data-assetid"));
+            }
+        });
+        setSelectedFileIds(checkedElementIds);
+    }
+
     // Select and unselect file handler
     const handleSelectFile = useCallback((id) => {
         if (id === "all") {
             const element = document.querySelectorAll("#select-file-checkbox");
             if (selectedFileIds.length !== uploadItems.length) {
-                // prevent folder select
-                const filteredFiles = uploadItems.filter((data) => validateUploadFilesTypes(data.type) !== "folder");
-                // set all files id to state
-                setSelectedFileIds(filteredFiles.map((item) => item._id));
                 element.forEach((checkbox) => checkbox.checked = true);
+                updateCheckedAssetsIds()
             } else {
                 setSelectedFileIds([]);
                 element.forEach((checkbox) => checkbox.checked = false);
             }
         } else {
-            setSelectedFileIds((prevSelected) =>
-                prevSelected.includes(id) ? prevSelected.filter((fileId) => fileId !== id) : [...prevSelected, id]
-            );
+            updateCheckedAssetsIds()
         }
     }, [selectedFileIds, uploadItems]);
 
@@ -89,12 +96,17 @@ export default function UploadItemsGridSection({
                 }
             }
         } catch (error) {
-           console.log(error) 
-        }finally{
+            console.log(error)
+        } finally {
             setBackdrop(false);
         }
     };
 
+    const updatePage = (arg) => {
+        reValidatePage(arg)
+        updateCheckedAssetsIds();
+    };
+    
     if (loading && uploadItems.length === 0) {
         return (
             <div className="w-full min-h-[70vh] flex justify-center items-center">
@@ -124,31 +136,31 @@ export default function UploadItemsGridSection({
                 </div>
 
                 {uploadItems.length > 0 && (
-                <div ref={deleteOptionContainerRef} className="hidden my-2">
-                    <div className="flex gap-2 items-center justify-between">
-                        <div className="flex gap-2 items-center">
-                            <small className="text-gray-600 font-medium">
-                                <span className="text-blue-700 mr-1 font-semibold">{selectedFileIds.length}</span>
-                                {selectedFileIds.length > 1 ? "files": "file "} select
-                            </small>
+                    <div ref={deleteOptionContainerRef} className="hidden my-2">
+                        <div className="flex gap-2 items-center justify-between">
+                            <div className="flex gap-2 items-center">
+                                <small className="text-gray-600 font-medium">
+                                    <span className="text-blue-700 mr-1 font-semibold">{selectedFileIds.length}</span>
+                                    {selectedFileIds.length > 1 ? "files" : "file "} select
+                                </small>
 
-                            {selectedFileIds.length > 0 && (
-                                <button
-                                    onClick={handleDeleteFile}
-                                    type="button"
-                                    className="text-red-600 mr-1 p-0.5"
-                                >
-                                    <i className="bi bi-trash"></i>
-                                    <span className="sr-only">Delete</span>
-                                </button>
-                            )}
-                        </div>
-                        <div className="small-screen:mx-2 mx-5">
-                            <label htmlFor="select-all-file" className="text-sm text-gray-900 font-medium mr-1.5">Select all</label>
-                            <Checkbox onChange={() => handleSelectFile("all")} className="w-3 h-3" aria-label="select file" id="select-all-file" checked={uploadItems.length > 0 && selectedFileIds.length === uploadItems.length ? true : false} />
+                                {selectedFileIds.length > 0 && (
+                                    <button
+                                        onClick={handleDeleteFile}
+                                        type="button"
+                                        className="text-red-600 mr-1 p-0.5"
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                        <span className="sr-only">Delete</span>
+                                    </button>
+                                )}
+                            </div>
+                            <div className="small-screen:mx-2 mx-5">
+                                <label htmlFor="select-all-file" className="text-sm text-gray-900 font-medium mr-1.5">Select all</label>
+                                <Checkbox onChange={() => handleSelectFile("all")} className="w-3 h-3" aria-label="select file" id="select-all-file" checked={uploadItems.length > 0 && selectedFileIds.length === uploadItems.length ? true : false} />
+                            </div>
                         </div>
                     </div>
-                </div>
                 )}
             </div>
 
@@ -170,7 +182,7 @@ export default function UploadItemsGridSection({
                                         functions={functions}
                                     />
                                     <div className="absolute right-0 top-0 z-10">
-                                        <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden cursor-pointer" aria-label="select file" />
+                                        <input type="checkbox" id="select-file-checkbox" data-assetid={data._id} onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden cursor-pointer" aria-label="select file" />
                                     </div>
                                 </div>
                             )}
@@ -183,7 +195,7 @@ export default function UploadItemsGridSection({
                                         functions={functions}
                                     />
                                     <div className="absolute right-0 top-0 z-10">
-                                        <input type="checkbox" id="select-file-checkbox" onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden cursor-pointer" aria-label="select file" />
+                                        <input type="checkbox" id="select-file-checkbox" data-assetid={data._id} onChange={() => handleSelectFile(data._id)} className="w-4 h-5 hidden cursor-pointer" aria-label="select file" />
                                     </div>
                                 </div>
                             )}
@@ -204,7 +216,7 @@ export default function UploadItemsGridSection({
                 src={fileView.src}
                 type={fileView.type}
                 handleSetFileView={setFileView}
-                reValidatePage={reValidatePage}
+                reValidatePage={updatePage}
             />
         </>
     );
