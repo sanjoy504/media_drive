@@ -200,11 +200,10 @@ export async function deleteUploadFiles(req, res) {
             const publicIds = fileIds.map(fileId => `media_cloud/user_upload/${fileId}`);
 
             //Delete files from Cloudinary
-            const cloudinaryResponse = await deleteFromCloudinary(publicIds);
+            await deleteFromCloudinary(publicIds);
 
             return res.status(200).send({
                 message: `${deleteFileFromDatabase.deletedCount} file(s) deleted successfully`,
-                cloudinaryResponse
             });
         } else {
             return res.status(400).send({ message: "Failed to delete files or files not found" });

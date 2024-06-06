@@ -16,39 +16,54 @@ export async function folderUpload(req, res) {
 
         const { folderName } = req.body
 
+        // setup initially mongodb new document object
         const documentObject = {
             user: _id,
             name: folderName,
             type: "folder",
         };
 
-        if (folderId) {
+        // setup inital check folder already exists query conditions object
+        const isFolderExistCheckQuery = {
+            user: _id,
+            name: folderName,
+            type: "folder",
+        }
+
+        // check is folder provided or its in indxfolders page creat or not
+        if (folderId && folderId !== 'indexfolders') {
 
             if (!isValidObjectId(folderId)) {
                 return res.status(400).json({ message: "Invalid folder" });
-            }
+            };
+
+            // set a folderId in check exist folder query for check in this provided fodder already exist under this folderId/folder
+            isFolderExistCheckQuery.folder = folderId;
+
+            // set parent folder if is not creat under indexfolders
             documentObject.folder = folderId;
         };
 
-        const findFolder = await UploadItem.findOne({ name: folderName })
+        // check folder already exists or not
+        const findFolder = await UploadItem.findOne(isFolderExistCheckQuery)
 
         if (findFolder) {
 
             return res.status(400).json({ message: "Folder already exist" });
-        }
+        };
 
+        // creat fiinal mongodb new document object
         const newUpload = new UploadItem(documentObject);
 
+        // save the documet on mongodb
         const saveDocument = await newUpload.save();
 
+        // check if document not save send error to client
         if (!saveDocument) {
             return res.status(500).json({ message: "Internal server error" });
         }
 
-        res.json({
-            message: "Folder create succesfully",
-            saveDocument
-        })
+        res.json({ message: "Folder create succesfully" })
 
     } catch (error) {
         console.log(error.message);
@@ -130,6 +145,7 @@ export async function fileUpload(req, res) {
         }
 
         res.json({ message: "Files uploaded successfully" });
+
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: "Internal server error" });

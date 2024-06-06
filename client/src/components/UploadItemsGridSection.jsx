@@ -253,7 +253,7 @@ const ImageCard = memo(({ id, src, alt, functions }) => {
     const imageCardRef = usePreventContextMenu(fileViewSetup);
 
     return (
-        <div className="w-full h-auto bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden px-1.5 py-2">
+        <div className="w-full h-auto min-h-32 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden px-1.5 py-2">
             <div ref={imageCardRef} onClick={fileViewSetup}>
                 <LazyLoadingImage
                     className="w-full h-full max-h-32 rounded-sm cursor-pointer"
