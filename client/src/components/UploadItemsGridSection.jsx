@@ -33,7 +33,6 @@ export default function UploadItemsGridSection({
 
     const setBackdrop = backdropProgress();
 
-
     // Switch option handler
     const handleSwitch = (e) => {
 
@@ -48,6 +47,9 @@ export default function UploadItemsGridSection({
             }
         };
     };
+
+    // check is selectAll is true or not 
+    const isSelectAll = (uploadItems.length > 0 ? (selectedFileIds.length === uploadItems.filter(data => data.type !== 'folder').length ? true : false) : false);
 
     const updateCheckedAssetsIds = () => {
         const element = document.querySelectorAll("#select-file-checkbox");
@@ -64,7 +66,7 @@ export default function UploadItemsGridSection({
     const handleSelectFile = useCallback((id) => {
         if (id === "all") {
             const element = document.querySelectorAll("#select-file-checkbox");
-            if (selectedFileIds.length !== uploadItems.length) {
+            if (!isSelectAll) {
                 element.forEach((checkbox) => checkbox.checked = true);
                 updateCheckedAssetsIds()
             } else {
@@ -106,7 +108,7 @@ export default function UploadItemsGridSection({
         reValidatePage(arg)
         updateCheckedAssetsIds();
     };
-    
+
     if (loading && uploadItems.length === 0) {
         return (
             <div className="w-full min-h-[70vh] flex justify-center items-center">
@@ -157,7 +159,7 @@ export default function UploadItemsGridSection({
                             </div>
                             <div className="small-screen:mx-2 mx-5">
                                 <label htmlFor="select-all-file" className="text-sm text-gray-900 font-medium mr-1.5">Select all</label>
-                                <Checkbox onChange={() => handleSelectFile("all")} className="w-3 h-3" aria-label="select file" id="select-all-file" checked={uploadItems.length > 0 && selectedFileIds.length === uploadItems.length ? true : false} />
+                                <Checkbox onChange={() => handleSelectFile("all")} className="w-3 h-3" aria-label="select file" id="select-all-file" checked={isSelectAll} />
                             </div>
                         </div>
                     </div>
@@ -165,7 +167,7 @@ export default function UploadItemsGridSection({
             </div>
 
             {uploadItems.length > 0 ? (
-                <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 my-2.5 px-2.5">
+                <div className="w-full h-auto grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] small-screen:grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-2 items-center my-2.5 px-2.5">
                     {uploadItems.map((data) => (
                         <Fragment key={data._id}>
                             {validateUploadFilesTypes(data.type) === "folder" && (
@@ -176,9 +178,7 @@ export default function UploadItemsGridSection({
                             {validateUploadFilesTypes(data.type) === "image" && (
                                 <div className="relative">
                                     <ImageCard
-                                        id={data._id}
-                                        src={data.uploadLink}
-                                        alt={data.name}
+                                        data={data}
                                         functions={functions}
                                     />
                                     <div className="absolute right-0 top-0 z-10">
@@ -189,9 +189,7 @@ export default function UploadItemsGridSection({
                             {validateUploadFilesTypes(data.type) === "pdf" && (
                                 <div className="relative">
                                     <PdfCard
-                                        id={data._id}
-                                        name={data.name}
-                                        pdfLink={data.uploadLink}
+                                        data={data}
                                         functions={functions}
                                     />
                                     <div className="absolute right-0 top-0 z-10">
@@ -234,55 +232,72 @@ const FolderCard = memo(({ id, name }) => {
     const folderCardRef = usePreventContextMenu(openFolder);
 
     return (
-        <div ref={folderCardRef} onClick={openFolder} className="bg-slate-50 w-full max-w-42 h-28 p-1.5 rounded-md shadow-sm flex flex-col justify-center items-center cursor-pointer relative">
+        <div ref={folderCardRef} onClick={openFolder} className="w-full max-w-42 h-28 p-1.5 rounded-md flex flex-col justify-center items-center cursor-pointer relative shadow-sm border border-slate-50">
             <i className="bi bi-folder-fill text-indigo-400 text-5xl"></i>
             <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full">
                 {name}
             </p>
+            {/**<div className="w-auto h-auto px-1 bg-red-500 text-[10px] text-white text-center absolute right-1 top-1 rounded-sm">New</div>*/}
         </div>
     );
 });
 
-const ImageCard = memo(({ id, src, alt, functions }) => {
+const ImageCard = memo(({ data, functions }) => {
+
+    const { _id, name, extension, size, uploadLink } = data || {};
     const { setFileView } = functions;
 
     const fileViewSetup = () => {
-        setFileView({ fileId: id, title: alt, src, type: "image" });
+        setFileView({ fileId: _id, title: name, src: uploadLink, type: "image" });
     };
 
     const imageCardRef = usePreventContextMenu(fileViewSetup);
 
     return (
-        <div className="w-full h-auto min-h-32 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden px-1.5 py-2">
+        <div className="w-full h-auto min-h-32 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden px-1.5 py-2 relative">
             <div ref={imageCardRef} onClick={fileViewSetup}>
                 <LazyLoadingImage
                     className="w-full h-full max-h-32 rounded-sm cursor-pointer"
-                    actualSrc={src}
-                    alt={alt}
+                    actualSrc={uploadLink}
+                    alt={name}
                 />
             </div>
-            <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full mt-1.5 px-1.5">
-                {alt}
+            <div className="text-[10px] text-gray-400 text-center my-1 flex items-center">
+                <div>{size}</div>
+                <i className="bi bi-dot"></i>
+                <div>{extension}</div>
+            </div>
+            <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full px-1.5">
+                {name}
             </p>
 
         </div>
     );
 });
 
-const PdfCard = memo(({ id, name, pdfLink, functions }) => {
+const PdfCard = memo(({ data, functions }) => {
+
+    const { _id, name, uploadLink, size, extension } = data || {};
 
     const { setFileView } = functions;
 
     const fileViewSetup = () => {
-        setFileView({ fileId: id, title: name, src: pdfLink, type: "pdf" });
+        setFileView({ fileId: _id, title: name, src: uploadLink, type: "pdf" });
     };
 
     const pdfCardRef = usePreventContextMenu(fileViewSetup);
 
     return (
-        <div className="bg-slate-50 p-1.5 w-full max-w-42 h-28 rounded-md shadow-sm flex flex-col justify-center items-center relative">
-            <i ref={pdfCardRef} onClick={fileViewSetup} className="bi bi-file-earmark-pdf-fill text-red-600 text-5xl cursor-pointer"></i>
-            <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full mt-1.5">
+        <div className="bg-slate-50 p-1.5 w-full max-w-42 h-auto rounded-md shadow-sm flex flex-col justify-center items-center relative px-1 py-1.5">
+            <div className="text-red-600 text-5xl cursor-pointer">
+                <i ref={pdfCardRef} onClick={fileViewSetup} className="bi bi-file-earmark-pdf-fill"></i>
+            </div>
+            <div className="text-[10px] text-gray-400 text-center my-1 flex items-center">
+                <div>{size}</div>
+                <i className="bi bi-dot"></i>
+                <div>{extension}</div>
+            </div>
+            <p className="text-[10px] text-gray-800 font-medium text-center line-clamp-2 break-all w-full">
                 {name}
             </p>
         </div>

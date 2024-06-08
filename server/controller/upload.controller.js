@@ -120,9 +120,6 @@ export async function fileUpload(req, res) {
             // Create a new MongoDB document
             const newUpload = new UploadItem(documentObject);
 
-            // Save the document in MongoDB
-            await newUpload.save();
-
             // Convert file buffer to file URI
             const fileUri = bufferToDataUri(file);
 
