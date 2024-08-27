@@ -10,19 +10,29 @@ function SideBar() {
     const { pathname } = useLocation();
 
     const navLinks = [{
-        name: "My folders",
+        name: "My Folders",
         path: "/drive/folders/indexfolders",
         icon: "bi bi-folder-fill"
+    },
+    {
+        name: "My Photos",
+        path: "/drive/uploads/photos",
+        icon: "bi bi-images"
+    },
+    {
+        name: "My Files",
+        path: "/drive/uploads/files",
+        icon: "bi bi-files"
+    },
+    {
+        name: "Recent",
+        path: "/drive/recent-files",
+        icon: "bi bi-clock-history"
     },
     {
         name: "Storage details",
         path: "/storage",
         icon: "bi bi-cloud-fill"
-    },
-    {
-        name: "Recent files",
-        path: "/drive/recent-files",
-        icon: "bi bi-clock-history"
     },
     ];
 

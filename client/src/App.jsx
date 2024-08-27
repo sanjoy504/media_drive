@@ -31,7 +31,7 @@ function App() {
 
       try {
 
-        const response = await axios.get(`${environmentVariables.backendUrls.vercel}/user/validate`,
+        const response = await axios.get(`${environmentVariables.backendUrls.render}/user/validate`,
           { withCredentials: true }
         );
 
@@ -52,8 +52,6 @@ function App() {
             storage_limit,
             storageDetails
           }));
-          // just active render deploy backend server becuase render make server sleeping mode if server is not runing long time
-          axios.get(environmentVariables.backendUrls.render);
         }
       } catch (error) {
         console.log(error)

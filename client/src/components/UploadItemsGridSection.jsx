@@ -1,6 +1,6 @@
 import { Fragment, useCallback, memo, useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Checkbox, CircularProgress, Switch } from "@mui/material";
+import { Checkbox, CircularProgress, Dialog, Switch } from "@mui/material";
 import { backdropProgress, validateUploadFilesTypes } from "../util/utils";
 import { deleteFileFromServer } from "../util/axiosHandler";
 import FileViewerModel from "./models/FileViewerModel";
@@ -28,6 +28,7 @@ export default function UploadItemsGridSection({
     });
 
     const [selectedFileIds, setSelectedFileIds] = useState([]);
+    const [deleteConfirmModal , setDeleteConfirmModal] = useState(false);
 
     const deleteOptionContainerRef = useRef();
 
@@ -66,6 +67,13 @@ export default function UploadItemsGridSection({
     const handleSelectFile = useCallback((id) => {
         if (id === "all") {
             const element = document.querySelectorAll("#select-file-checkbox");
+           
+                element.forEach((checkbox) =>{
+                if (checkbox && !checkbox.style.display && checkbox.style.display !== "block") {
+                    checkbox.style.display = "block";
+                }
+            });
+
             if (!isSelectAll) {
                 element.forEach((checkbox) => checkbox.checked = true);
                 updateCheckedAssetsIds()
@@ -85,6 +93,7 @@ export default function UploadItemsGridSection({
 
     // Delete files handler
     const handleDeleteFile = async () => {
+        setDeleteConfirmModal(false);
         try {
             if (selectedFileIds.length > 0) {
                 setBackdrop(true);
@@ -117,6 +126,8 @@ export default function UploadItemsGridSection({
         );
     };
 
+    const isAllFolders = uploadItems?.every(item => item.type === 'folder');
+
     return (
         <>
             <div className={`w-full h-auto ${pageLoading ? 'hidden' : 'block'} py-1 px-3.5 small-screen:px-2.5 sticky top-[70px] z-20 bg-white border-b border-b-slate-100 shadow-sm`}>
@@ -124,7 +135,7 @@ export default function UploadItemsGridSection({
                 <div className="w-full h-auto flex justify-between items-center">
                     <div>
                         <h3 className="text-gray-900 text-baze small-screen:text-xs font-bold line-clamp-2">{title}</h3>
-                        {uploadItems.length > 0 && creatFile && (
+                        {uploadItems.length > 0 && creatFile && !isAllFolders && (
                             <>
                                 <label htmlFor="edit-file-mode-switch" className="text-xs">Option mode</label>
                                 <Switch id="edit-file-mode-switch" onChange={handleSwitch} size="small" />
@@ -137,7 +148,7 @@ export default function UploadItemsGridSection({
                     )}
                 </div>
 
-                {uploadItems.length > 0 && (
+                {uploadItems.length > 0 && !isAllFolders && (
                     <div ref={deleteOptionContainerRef} className="hidden my-2">
                         <div className="flex gap-2 items-center justify-between">
                             <div className="flex gap-2 items-center">
@@ -148,7 +159,7 @@ export default function UploadItemsGridSection({
 
                                 {selectedFileIds.length > 0 && (
                                     <button
-                                        onClick={handleDeleteFile}
+                                        onClick={()=> setDeleteConfirmModal(true)}
                                         type="button"
                                         className="text-red-600 mr-1 p-0.5"
                                     >
@@ -216,6 +227,25 @@ export default function UploadItemsGridSection({
                 handleSetFileView={setFileView}
                 reValidatePage={updatePage}
             />
+            {/** Delete Confirm Model */}
+            <Dialog
+            open={deleteConfirmModal}
+            onClose={() => setDeleteConfirmModal(false)}
+        >
+                    <div className="p-4">
+                        <p className="text-gray-900 text-lg font-medium mb-4">
+                            Are you sure you want to delete the selected file?
+                        </p>
+                        <div className="flex gap-2 space-x-4">
+                            <button onClick={handleDeleteFile} className="text-red-600 mr-1 bg-red-100 px-2.5 py-2 rounded-md font-medium">
+                                Delete
+                            </button>
+                            <button onClick={() => setDeleteConfirmModal(false)} className="text-gray-700 mr-1 bg-gray-300 px-2.5 py-2 rounded-md font-medium">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </Dialog>
         </>
     );
 }
@@ -254,10 +284,10 @@ const ImageCard = memo(({ data, functions }) => {
     const imageCardRef = usePreventContextMenu(fileViewSetup);
 
     return (
-        <div className="w-full h-auto min-h-32 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden px-1.5 py-2 relative">
-            <div ref={imageCardRef} onClick={fileViewSetup}>
+        <div className="w-full h-fit min-h-32 bg-slate-50 border border-slate-200 rounded-sm flex flex-col justify-center items-center overflow-hidden px-1.5 py-2 relative">
+            <div className="w-full h-fit aspect-[4/3] px-1 py-2 flex items-center" ref={imageCardRef} onClick={fileViewSetup}>
                 <LazyLoadingImage
-                    className="w-full h-full max-h-32 rounded-sm cursor-pointer"
+                    className="w-full h-auto max-h-60 max-w-40 mx-auto rounded-sm cursor-pointer"
                     actualSrc={uploadLink}
                     alt={name}
                 />

@@ -11,6 +11,9 @@ const Home = lazy(() => import("./home/Home"));
 const FoldersLayout = lazy(() => import("./folders_layout/FoldersLayout"));
 
 //Recent uploads files route
+const UserUploadPhotos = lazy(() => import("./get_upload_Files/MyPhotos"));
+
+//Recent uploads files route
 const RecentUploadsFiles = lazy(() => import("./recent_upoads_files/RecentUploadsFiles"));
 
 //Storage page route
@@ -26,8 +29,11 @@ function RouteLayout() {
                 <Route exact path="/" element={<Home />} />
 
                 <Route exact path="/drive/folders/:folderId" element={<FoldersLayout />} />
-    
+
+                <Route exact path="/drive/uploads/:type" element={<UserUploadPhotos />} />
+
                 <Route exact path="/drive/recent-files" element={<RecentUploadsFiles />} />
+
                 <Route exact path="/storage" element={<StoragePage />} />
 
                 <Route exact path="/search" element={<SearchPage />} />

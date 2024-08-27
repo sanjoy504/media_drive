@@ -6,12 +6,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import { styled } from '@mui/material';
 import { environmentVariables } from '../../helper/helper';
-import { validateUploadFilesTypes } from '../../util/utils';
+import { creatToastAlert, validateUploadFilesTypes } from '../../util/utils';
 
 
 const VisuallyHiddenInput = styled('input')({
@@ -98,7 +97,6 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
     return (
         <Dialog
             open={isOpen}
-            onClose={!progress && handleClose}
             hideBackdrop={false}
             PaperProps={{
                 component: 'form',
@@ -107,12 +105,13 @@ const UploadFileModel = memo(({ isOpen, setOpen, reValidatePath }) => {
         >
             {!progress ? (
                 <>
-                    <DialogTitle>
-                        Upload file
-                        {errorMessage && (
-                            <p className="text-xs text-red-700">{errorMessage}</p>
-                        )}
-                    </DialogTitle>
+                <div className="mt-3">
+                    <h2 className="text-center font-bold">Upload file</h2>
+
+                    {errorMessage && (
+                        <p className="text-xs text-red-700">{errorMessage}</p>
+                    )}
+                    </div>
 
                     <DialogContent>
                         <DialogContentText className="max-w-80">
@@ -151,26 +150,34 @@ function InputFileUpload({ setErrorMessage }) {
 
         const newFiles = Array.from(event.target.files);
 
-        if (newFiles.length > 10) {
+        // filter and remove existing files
+        const filteredNewFiles = newFiles.filter(file => !fileList.some(f => f.name === file.name));
+        if (newFiles.length !== filteredNewFiles.length) {
+            creatToastAlert({ message: 'Some files are ignored is already selected' });
+        };
+
+        console.log(newFiles.length);
+        console.log(filteredNewFiles.length);
+        if (filteredNewFiles.length > 10) {
             setErrorMessage('You can upload only 10 files at a time');
             event.target.value = ''; // Clear the file input field
             return;
-        } else if (fileList.concat(newFiles).length > 10) {
+        } else if (fileList.concat(filteredNewFiles).length > 10) {
             setErrorMessage('You can upload only 10 files at a time');
             return;
         };
 
         setErrorMessage(null);
 
-        const previews = newFiles.map((file) => {
+        const previews = filteredNewFiles.map((file) => {
             return { url: URL.createObjectURL(file), type: file.type };
         });
 
         //Add updateed new files at beggining of array
-        setFilePreviews([...previews, ...filePreviews,]);
+        setFilePreviews((prev => [...previews, ...prev]));
 
         // Concatenate the new files to the existing fileList
-        const updatedFiles = [...fileList, ...newFiles];
+        const updatedFiles = [...fileList, ...filteredNewFiles];
         setFileList(updatedFiles);
         updateInputFiles(updatedFiles);
     };
@@ -194,9 +201,9 @@ function InputFileUpload({ setErrorMessage }) {
 
     return (
         <div className="max-w-96 my-3 flex flex-col justify-center">
-            <div className="flex flex-row items-center overflow-x-auto">
+            <div className="flex flex-row items-center overflow-x-auto space-x-1.5">
                 {filePreviews.map((preview, index) => (
-                    <div key={index} className="relative flex-shrink-0 w-auto mr-4">
+                    <div key={index} className="relative flex-shrink-0 w-auto my-3">
                         {validateUploadFilesTypes(preview.type) === "image" && (
                             <img className="max-w-full h-40 border border-slate-200 rounded-sm" src={preview.url} alt={`Preview ${index}`} />
                         )}

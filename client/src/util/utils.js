@@ -1,6 +1,22 @@
 import { useDispatch } from "react-redux";
 import { updateWebState } from "../context/web_state/webStateSlice";
 
+/*************** Transfrom capitalize **************/
+const transformToCapitalize = (text) => {
+
+    // Split the text into an array of words
+    const words = text?.split('-');
+  
+    // Capitalize the first letter of each word and join them with a space
+    const capitalizedWords = words?.map(word => {
+      return word?.charAt(0).toUpperCase() + word.slice(1);
+    });
+  
+    // Join the words with a space and return the result
+    return capitalizedWords?.join(' ');
+  };
+
+
 //Toggle side bar work only small screen
 export const toggleSidebar = (type) => {
     const sideBar = document.querySelector("#sidebar");
@@ -80,4 +96,37 @@ export function downloadImageAndPdf(src, title) {
         .catch(error => {
             console.error('Download failed:', error);
         });
+};
+
+
+// ******** Creat Toast Message Alert In Dom For Temporarily *******/
+//Creat Tooltip Popup Messages 
+let currentTooltip = null;
+export const creatToastAlert = ({ message, visiblityTime = 8000 }) => {
+  // If there's already a tooltip displayed, remove it before showing the new one
+  if (currentTooltip && currentTooltip.element) {
+    document.body.removeChild(currentTooltip.element);
+    clearTimeout(currentTooltip.timerId);
+  }
+
+  // Create a div element for the tooltip
+  const toolTip = document.createElement('div');
+
+   toolTip.classList.add('custome_toast_message', 'md:text-base');
+
+  // Set inner text (or inner HTML if needed)
+  toolTip.innerText = transformToCapitalize(message);
+  
+  // Append the created element to the DOM, assuming you want to add it to the body
+  document.body.appendChild(toolTip);
+
+  // Remove the tooltip after the specified visibility time
+  const timerId = setTimeout(() => {
+    document.body.removeChild(toolTip);
+    // Clear the reference to the tooltip
+    currentTooltip = null;
+  }, visiblityTime);
+
+  // Update the currentTooltip and store the DOM element and timerId
+  currentTooltip = { element: toolTip, timerId };
 };

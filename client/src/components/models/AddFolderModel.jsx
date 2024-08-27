@@ -63,7 +63,7 @@ const AddFolderModel = memo(({ isOpen, setOpen, reValidatePath }) => {
             setProgress(true);
 
             const api = axios.create({
-                baseURL: environmentVariables.backendUrls.vercel,
+                baseURL: environmentVariables.backendUrls.render,
                 withCredentials: true
             });
 

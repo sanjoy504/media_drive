@@ -24,7 +24,7 @@ export default function LoginPage() {
       const { name, email, picture } = decoded;
 
       const api = axios.create({
-        baseURL: `${environmentVariables.backendUrls.vercel}/login/google_login`,
+        baseURL: `${environmentVariables.backendUrls.render}/login/google_login`,
         withCredentials: true,
       })
 

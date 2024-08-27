@@ -9,7 +9,7 @@ import { getTotalSizesByTypes } from "../lib/dbOperations.js";
 const uploadItemsSelectFields = "name type folder uploadLink size extension";
 
 //validate user controller if user authenticated send user details to client 
-export async function validateUser(req, res){
+export async function validateUser(req, res) {
 
     const user = req.user;
 
@@ -17,10 +17,10 @@ export async function validateUser(req, res){
     const { _id, storage_limit } = user || {};
 
     const [userDetails, storageDetails] = await Promise.all([
-        
+
         // get user details
         User.findById(_id).select('name avatar email storage_limit'),
-         
+
         //get ser storage details like
         getTotalSizesByTypes({
             user: _id,
@@ -42,7 +42,7 @@ export async function getFolderItems(req, res) {
 
         const { folder, limit, skip } = req.body;
 
-         const query = { user: _id };
+        const query = { user: _id };
 
         if (folder) {
 
@@ -76,7 +76,7 @@ export async function getFolderItems(req, res) {
         console.log(error.message);
         return res.status(500).json({ message: "Internal server error" });
     }
-}; 
+};
 
 
 // Get user upload items
@@ -89,7 +89,7 @@ export async function getUploadItems(req, res) {
 
         const { limit, skip } = req.body;
 
-        const query = { user: _id, type: {$nin: 'folder'}  };
+        const query = { user: _id, type: { $nin: 'folder' } };
 
         const [uploadItems, folderDetails] = await Promise.all([
             UploadItem.find(query)
@@ -115,6 +115,38 @@ export async function getUploadItems(req, res) {
 };
 
 //Get user recent upload files
+export async function getFiles(req, res) {
+    try {
+
+        const user = req.user;
+
+        const { _id } = user || {};
+
+        const { limit, skip, type } = req.body;
+        const regexType = new RegExp(type, 'i')
+
+        const query = {
+            user: _id,
+            type: { $regex: regexType },
+        };
+
+        const uploadItems = await UploadItem.find(query)
+            .sort({ creatAt: -1 })
+            .limit(limit || 20)
+            .skip(skip)
+            .select(uploadItemsSelectFields);
+
+        const endOfData = (uploadItems.length < limit - 1);
+
+        return res.status(200).json({ uploadItems, endOfData });
+
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+//Get user all photos from
 export async function getRecentUploadItems(req, res) {
     try {
 
@@ -193,10 +225,10 @@ export async function deleteUploadFiles(req, res) {
         }
 
         // Delete files from database
-        const deleteFileFromDatabase = await UploadItem.deleteMany({ _id: { $in: fileIds },  });
+        const deleteFileFromDatabase = await UploadItem.deleteMany({ _id: { $in: fileIds }, });
 
         if (deleteFileFromDatabase.deletedCount > 0) {
-          
+
             const publicIds = fileIds.map(fileId => `media_cloud/user_upload/${fileId}`);
 
             //Delete files from Cloudinary

@@ -3,9 +3,9 @@ import { fileUpload, folderUpload } from "../controller/upload.controller.js";
 import { multerUpload } from "../util/multer.js";
 import {
         deleteUploadFiles,
+        getFiles,
         getFolderItems,
         getRecentUploadItems,
-        getUploadItems,
         uploadSearchHandler,
         validateUser
 } from "../controller/user.controller.js";
@@ -24,6 +24,9 @@ router.post("/upload/folder", folderUpload);
 
 //get upload items
 router.post("/get_uploads", getFolderItems);
+
+//Get User Files route
+router.post("/get_files", getFiles);
 
 //Recent upload files route
 router.post("/recent_uploads_files", getRecentUploadItems);
